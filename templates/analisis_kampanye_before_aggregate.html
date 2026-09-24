@@ -1,0 +1,799 @@
+<!DOCTYPE html>
+<html lang="id" data-theme="dark">
+<head><link rel="icon" type="image/png" href="/static/favicon.png"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Analisis Kampanye | Kowalski Ads Center</title>
+
+<script>!function(){var t=localStorage.getItem('rg-theme')||'dark';document.documentElement.setAttribute('data-theme',t)}()</script><script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/static/style.css">
+
+<style>
+.llm-section { margin-top: 16px; }
+.llm-box {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 16px 20px;
+    margin-top: 12px;
+    white-space: pre-wrap;
+    line-height: 1.7;
+    font-size: 0.85rem;
+    min-height: 60px;
+}
+.llm-box.loading {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    color: var(--text-muted);
+}
+.llm-box.loading::before {
+    content: '';
+    width: 16px; height: 16px;
+    border: 2px solid var(--accent);
+    border-top-color: transparent;
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+.llm-meta { font-size: 0.75rem; color: var(--text-muted); margin-top: 8px; }
+.camp-name-cell {
+    max-width: 280px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+.grand-total {
+    border-top: 2px solid var(--accent);
+    background: color-mix(in srgb, var(--accent) 8%, transparent);
+}
+.grand-total td {
+    font-weight: 700;
+    padding-top: 10px;
+    padding-bottom: 10px;
+}
+.grand-total .num strong {
+    font-weight: 800;
+}
+.winning-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    gap: 12px;
+}
+.winning-card {
+    background: var(--bg-hover);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 14px;
+    border-left: 4px solid var(--accent);
+    transition: all 0.2s;
+}
+.winning-card:hover {
+    border-color: var(--accent);
+    transform: translateY(-2px);
+}
+.winning-card .rank {
+    display: inline-block;
+    background: var(--accent);
+    color: #fff;
+    font-size: 0.7rem;
+    font-weight: 700;
+    padding: 2px 8px;
+    border-radius: 10px;
+    margin-bottom: 8px;
+}
+.winning-card .wname {
+    font-weight: 600;
+    font-size: 0.8rem;
+    margin-bottom: 4px;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+.winning-card .wcamp {
+    font-size: 0.7rem;
+    color: var(--text-muted);
+    margin-bottom: 8px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+.winning-card .wacc {
+    font-size: 0.65rem;
+    font-weight: 600;
+    color: var(--accent-light);
+    margin-bottom: 8px;
+}
+.winning-card .wstats {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.75rem;
+}
+.winning-card .wstats .ws {
+    text-align: center;
+}
+.winning-card .wstats .ws .wval {
+    font-weight: 700;
+    font-size: 0.85rem;
+}
+.winning-card .wstats .ws .wlabel {
+    font-size: 0.6rem;
+    color: var(--text-muted);
+    text-transform: uppercase;
+}
+/* Toggle button — green = active, red = paused */
+.btn-toggle {
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-size: 1.1rem;
+    padding: 4px 10px;
+    border-radius: 6px;
+    transition: all 0.2s;
+    font-weight: 700;
+}
+.btn-green {
+    background: #00b894;
+    color: #fff;
+}
+.btn-green:hover {
+    background: #00a381;
+    box-shadow: 0 0 12px rgba(0,184,148,0.4);
+}
+.btn-red {
+    background: #ff6b6b;
+    color: #fff;
+}
+.btn-red:hover {
+    background: #e05555;
+    box-shadow: 0 0 12px rgba(255,107,107,0.4);
+}
+.toast-toggle {
+    position: fixed;
+    bottom: 30px;
+    right: 30px;
+    padding: 12px 24px;
+    border-radius: 8px;
+    color: #fff;
+    font-weight: 600;
+    font-size: 0.85rem;
+    z-index: 2000;
+    animation: fadeInUp 0.3s ease;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.4);
+}
+.toast-toggle.success { background: var(--success); }
+.toast-toggle.error { background: var(--danger); }
+@keyframes fadeInUp {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+/* Modal konfirmasi pause */
+.modal-overlay {
+    display: none;
+    position: fixed;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: rgba(0,0,0,0.7);
+    z-index: 1000;
+    justify-content: center;
+    align-items: center;
+}
+.modal-overlay.show {
+    display: flex;
+}
+.modal-box {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 24px;
+    max-width: 420px;
+    width: 90%;
+    text-align: center;
+}
+.modal-box h3 { margin: 0 0 8px 0; font-size: 1.1rem; }
+.modal-box p { color: var(--text-muted); font-size: 0.85rem; margin: 0 0 16px 0; }
+.modal-campaign-name {
+    background: var(--bg-hover);
+    padding: 10px 14px;
+    border-radius: 6px;
+    margin-bottom: 20px;
+    font-size: 0.85rem;
+    word-break: break-word;
+}
+.modal-actions {
+    display: flex;
+    gap: 10px;
+    justify-content: center;
+}
+.btn-modal-cancel {
+    background: var(--bg-hover);
+    border: 1px solid var(--border);
+    color: var(--text);
+    padding: 8px 24px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 0.85rem;
+}
+.btn-modal-confirm {
+    background: var(--danger);
+    border: none;
+    color: #fff;
+    padding: 8px 24px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: 600;
+    font-size: 0.85rem;
+}
+</style>
+</head>
+<body>
+
+<!-- TOPBAR -->
+<header class="topbar">
+    <div class="topbar-inner">
+        <div class="topbar-left">
+            <button class="sidebar-toggle" id="sidebarToggle" onclick="toggleSidebar()">☰</button>
+            <span class="logo">Kowalski Ads Center</span>
+        </div>
+        <div class="topbar-right">
+            <button class="theme-toggle" onclick="toggleTheme()" title="Ganti tema"><i class="bi bi-circle-half" aria-hidden="true"></i></button>
+            <span class="topbar-date" id="currentDate"></span>
+        </div>
+    </div>
+</header>
+
+<!-- SIDEBAR BACKDROP (mobile) -->
+<div id="sidebarBackdrop" class="sidebar-backdrop" onclick="toggleSidebar()"></div>
+
+<!-- SIDEBAR -->
+<aside class="sidebar collapsed" id="sidebar">
+    <div class="sidebar-brand">
+        <span class="brand-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg></span>
+        <div>
+            <div class="brand-name">Kowalski Ads Center</div>
+            <div class="brand-sub">Meta Ads Dashboard</div>
+        </div>
+    </div>
+    <nav class="sidebar-nav">
+                <a class="nav-item {{ 'active' if group=='generos' or group=='genmilk' else '' }}" href="#" onclick="toggleSubmenu(event, 'dashSubs')">
+            <span><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg></span> <span>Dashboard</span>
+            <span class="nav-arrow {{ 'open' if group=='generos' or group=='genmilk' else '' }}"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg></span>
+        </a>
+        <div class="nav-subs {{ 'open' if group=='generos' or group=='genmilk' else '' }}" id="dashSubs">
+            <a href="/dashboard" class="nav-sub {{ 'active' if group=='generos' else '' }}"><span><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg></span> <span>Generos</span></a>
+            <a href="/dashboard/genmilk" class="nav-sub {{ 'active' if group=='genmilk' else '' }}"><span><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2.69l5.66 5.66a8 8 0 1 1-11.31 0z"/></svg></span> <span>GenMilk</span></a>
+        </div>
+        <div class="nav-section">Analisis</div>
+        <a class="nav-item" href="#" onclick="toggleSubmenu(event, 'analisisSubs')">
+            <span><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg></span> <span>Analisis</span>
+            <span class="nav-arrow open"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg></span>
+        </a>
+        <div class="nav-subs open" id="analisisSubs">
+            <a href="/analisis/kampanye" class="nav-sub active""><span><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg></span> <span>Kampanye</span></a>
+            <a href="/analisis/adset" class="nav-sub"><span><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg></span> <span>Adset</span></a>
+            <a href="/analisis/iklan" class="nav-sub"><span><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg></span> <span>Iklan</span></a>
+        </div>
+        <div class="admin-only" style="display:contents">
+        <div class="nav-section">Creator</div>
+        <a class="nav-item" href="#" onclick="toggleSubmenu(event, 'creatorSubs')">
+            <span><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="3" width="20" height="18" rx="3" ry="3"/><polygon points="10 8 16 12 10 16 10 8"/></svg></span> <span>Creator</span>
+            <span class="nav-arrow open"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg></span>
+        </a>
+        <div class="nav-subs open" id="creatorSubs">
+            <a href="/vo-generator" class="nav-sub admin-only "><span><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" y1="19" x2="12" y2="22"/></svg></span> <span>Generator VO</span></a>
+            <a href="/storyboard" class="nav-sub"><span><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="3" width="20" height="18" rx="3" ry="3"/><polygon points="10 8 16 12 10 16 10 8"/></svg></span> <span>Storyboard Creator</span></a>
+            <a href="/copywriting-generator" class="nav-sub"><span><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z"/></svg></span> <span>Copywriting Generator</span></a>
+            <a href="/adset-generator" class="nav-sub admin-only"><span><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg></span> <span>Adset Generator</span></a>
+        </div>
+        </div>
+        <a class="nav-item admin-only" href="/bank-konten"><span><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg></span> <span>Bank Konten</span></a>
+        <div class="nav-section">Tools</div>
+        <a class="nav-item admin-only" href="/dev/campaign-studio"><span><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4.5 16.5c-1.5 1.26-2 5-2 5s3.74-.5 5-2c.71-.84.7-2.13-.06-2.91a2.2 2.2 0 0 0-2.94-.09z"/><path d="M12 15l-3-3a22 22 0 0 1 2-3.95A12.88 12.88 0 0 1 22 2c0 2.72-.78 7.5-6 11a22.35 22.35 0 0 1-4 2z"/><path d="M9 12H4s.55-3.03 2-4c1.62-1.08 5 0 5 0"/><path d="M12 15v5s3.03-.55 4-2c1.08-1.62 0-5 0-5"/></svg></span> <span>Campaign Studio <span class="badge" style="margin-left:4px;font-size:0.55rem;padding:1px 6px;background:linear-gradient(135deg,#6c5ce7,#fd79a8);color:#fff;border-radius:4px">Final Testing</span></span></a>
+            <a href="/custom-audiences" class="nav-sub admin-only "><span><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg></span> <span>Custom Audience </span></a>
+            <a href="/page-post" class="nav-sub admin-only "><span><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg></span> <span>Post Fanpage </span></a>
+        <a class="nav-item" href="/roas"><span><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg></span> <span>ROAS Report</span></a>
+        <div class="nav-section">Sistem</div>
+        <a class="nav-item admin-only" href="/cron-management"><span><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg></span> <span>Cron Management</span></a>
+    </nav>
+    <div class="sidebar-user">
+        <div class="user-avatar">GA</div>
+        <div style="flex:1;min-width:0"><div class="user-name">Gilang Aji</div><div class="user-role">Administrator</div></div>
+        <button class="btn-logout" onclick="logout()" title="Logout"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg></button>
+    </div>
+</aside>
+
+<!-- MAIN -->
+<main class="main expanded" id="mainContent">
+
+<div class="page-header">
+    <h1>Analisis Kampanye</h1>
+    <div class="header-actions">
+        <input type="date" class="select" id="dateFrom" onchange="loadData()" style="width:135px">
+        <input type="date" class="select" id="dateTo" onchange="loadData()" style="width:135px">
+        <button class="btn btn-sm" data-range="hari_ini" onclick="setRange('hari_ini')">Hari Ini</button>
+        <button class="btn btn-sm" data-range="kemarin" onclick="setRange('kemarin')">Kemarin</button>
+        <button class="btn btn-sm" data-range="3" onclick="setRange(3)">3 Hari</button>
+        <button class="btn btn-sm" data-range="7" onclick="setRange(7)">7 Hari</button>
+        <button class="btn btn-sm" data-range="30" onclick="setRange(30)">30 Hari</button>
+    </div>
+</div>
+
+<!-- WINNING CAMPAIGN CARDS -->
+<div class="card">
+    <div class="card-header">
+        <h3>🏆 Top 5 Winning Campaign</h3>
+        <span class="muted" id="winCount">Berdasarkan filter tanggal</span>
+    </div>
+    <div class="card-body">
+        <div class="winning-grid" id="winningGrid">
+            <div class="muted">Memuat data...</div>
+        </div>
+    </div>
+</div>
+
+<!-- CAMPAIGN TABLE -->
+<div class="card">
+    <div class="card-header">
+        <h3>Data Campaign</h3>
+        <div class="card-filters">
+            <select class="select" id="accountFilter" onchange="loadData()">
+                <option value="">Semua Akun</option>
+            </select>
+            <span class="muted" id="campCount"></span>
+            <button class="btn btn-sm" id="syncBtn" onclick="syncData()" title="Sync data dari Meta Ads" style="margin-left:8px">🔄 Sync</button>
+        </div>
+    </div>
+    <div class="card-body table-wrap">
+        <table class="table" id="campaignTable">
+            <thead><tr>
+                <th onclick="sortTable(0)">Akun ⇅</th>
+                <th onclick="sortTable(1)">Nama Campaign ⇅</th>
+                <th onclick="sortTable(2)">Status ⇅</th>
+                <th onclick="sortTable(3)">Spend ⇅</th>
+                <th onclick="sortTable(4)">Hasil ⇅</th>
+                <th onclick="sortTable(5)">CPR ⇅</th>
+                <th onclick="sortTable(6)">CPC ⇅</th>
+                <th onclick="sortTable(7)">CTR ⇅</th>
+                <th onclick="sortTable(8)">Tanggal ⇅</th>
+                <th class="admin-only">Aksi</th>
+            </tr></thead>
+            <tbody id="campaignBody"><tr><td colspan="10" class="text-center" id="loadingCell">Memuat...</td></tr></tbody>
+        </table>
+    </div>
+</div>
+
+<!-- LLM ANALYSIS -->
+<div class="card llm-section">
+    <div class="card-header">
+        <h3>Analisis AI</h3>
+        <button class="btn btn-primary" id="analyzeBtn" onclick="generateAnalysis()">🔍 Generate Analisis</button>
+    </div>
+    <div class="card-body">
+        <div id="analysisOutput" class="llm-box muted">Klik "Generate Analisis" untuk mendapatkan analisis kampanye berdasarkan filter yang dipilih.</div>
+    </div>
+</div>
+
+</main>
+
+<div id="toast" class="toast"></div>
+
+<script>
+
+// ===== SIDEBAR =====
+function toggleSidebar() {
+    const sidebar = document.getElementById('sidebar');
+    const main = document.getElementById('mainContent');
+    const backdrop = document.getElementById('sidebarBackdrop');
+    sidebar.classList.toggle('collapsed');
+    main.classList.toggle('expanded');
+    if (window.innerWidth <= 768) {
+        backdrop.classList.toggle('show');
+    }
+}
+function toggleCronMenu(e) { e.preventDefault(); const s=document.getElementById('cronSubs'); const a=e.currentTarget.querySelector('.nav-arrow'); s.classList.toggle('open'); if(a) a.classList.toggle('open'); }
+function toggleSubmenu(e, id) { e.preventDefault(); const s=document.getElementById(id); const a=e.currentTarget.querySelector('.nav-arrow'); s.classList.toggle('open'); if(a) a.classList.toggle('open'); }
+
+// ===== THEME =====
+function toggleTheme(){var c=document.documentElement.getAttribute('data-theme'),n=c==='dark'?'light':'dark';document.documentElement.setAttribute('data-theme',n);localStorage.setItem('rg-theme',n);}
+
+// ===== ROLE CHECK =====
+(function() {
+    const role = sessionStorage.getItem('rg_role');
+    if (!role) { window.location.href = '/'; return; }
+    // Update sidebar user info
+    const un = document.querySelector('.user-name');
+    const ur = document.querySelector('.user-role');
+    const ua = document.querySelector('.user-avatar');
+    if (un) un.textContent = role === 'admin' ? 'Admin' : 'Guest';
+    if (ur) ur.textContent = role === 'admin' ? 'Administrator' : 'Pengunjung';
+    if (ua) ua.textContent = role === 'admin' ? 'AD' : 'GT';
+    if (role === 'guest') {
+        document.querySelectorAll('.admin-only').forEach(el => el.remove());
+        window._guestMode = true;
+    }
+})();
+
+function logout() {
+    sessionStorage.removeItem('rg_role');
+    window.location.href = '/';
+}
+
+// ===== TOAST =====
+function showToast(msg, type) { const t=document.getElementById('toast'); t.textContent=msg; t.className='toast toast-'+type; setTimeout(()=>t.className='toast',4000); }
+
+// ===== DATE =====
+document.getElementById('currentDate').textContent = new Date().toLocaleDateString('id-ID',{weekday:'long',year:'numeric',month:'long',day:'numeric'});
+
+function getLocalDate() { const d=new Date(); return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0'); }
+
+// ===== STATE =====
+let sortCol = 3, sortAsc = false;
+let campaignData = [];
+
+// ===== INIT =====
+window.onload = function() {
+    const today = getLocalDate();
+    document.getElementById('dateTo').value = today;
+    document.getElementById('dateFrom').value = today;
+    // Default highlight: Hari Ini
+    const defaultBtn = document.querySelector('.header-actions .btn[data-range="hari_ini"]');
+    if (defaultBtn) defaultBtn.classList.add('active');
+    loadAccountFilter();
+    loadData();
+};
+
+function setRange(range) {
+    // Highlight active filter button
+    document.querySelectorAll('.header-actions .btn').forEach(b => b.classList.remove('active'));
+    const btn = document.querySelector(`.header-actions .btn[data-range="${range}"]`);
+    if (btn) btn.classList.add('active');
+    
+    const to = new Date();
+    if (range === 'hari_ini') {
+        const today = getLocalDate();
+        document.getElementById('dateFrom').value = today;
+        document.getElementById('dateTo').value = today;
+    } else if (range === 'kemarin') {
+        to.setDate(to.getDate() - 1);
+        const d = getLocalDateFrom(to);
+        document.getElementById('dateFrom').value = d;
+        document.getElementById('dateTo').value = d;
+    } else {
+        const from = new Date();
+        from.setDate(from.getDate() - (range - 1));
+        document.getElementById('dateFrom').value = getLocalDateFrom(from);
+        document.getElementById('dateTo').value = getLocalDate();
+    }
+    loadData();
+}
+
+function getLocalDateFrom(d) {
+    return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');
+}
+
+// ===== LOAD DATA =====
+function loadData() {
+    const df = document.getElementById('dateFrom').value;
+    const dt = document.getElementById('dateTo').value;
+    const aid = document.getElementById('accountFilter').value;
+    let url = '/api/campaigns?limit=10000';
+    if (df && dt) url += '&date_from='+df+'&date_to='+dt;
+    if (aid) url += '&account_id='+aid;
+    
+    document.getElementById('campaignBody').innerHTML = '<tr><td colspan="10" class="text-center">Memuat...</td></tr>';
+    
+    fetch(url).then(r=>r.json()).then(data => {
+        // Filter: ACTIVE semua, PAUSED kalo spend > 1
+        data = data.filter(c => c.status==='ACTIVE' || (c.status==='PAUSED' && parseFloat(c.spend)>1));
+        // Default sort: ACTIVE di atas, lalu urut by Spend ↓
+        data.sort((a,b) => {
+            const aActive = a.status === 'ACTIVE' ? 0 : 1;
+            const bActive = b.status === 'ACTIVE' ? 0 : 1;
+            if (aActive !== bActive) return aActive - bActive;
+            return parseFloat(b.spend||0) - parseFloat(a.spend||0);
+        });
+        campaignData = data;
+        document.getElementById('campCount').textContent = data.length + ' campaign';
+        sortCol = 3; sortAsc = false;
+        renderTable(campaignData);
+        renderWinningCards(campaignData);
+        updateSortHeaders();
+    }).catch(() => {
+        document.getElementById('campaignBody').innerHTML = '<tr><td colspan="10" class="text-center error">Gagal memuat data</td></tr>';
+    });
+}
+
+function loadAccountFilter() {
+    fetch('/api/accounts').then(r=>r.json()).then(accs => {
+        const sel = document.getElementById('accountFilter');
+        sel.innerHTML = '<option value="">Semua Akun</option>';
+        accs.forEach(a => {
+            const o = document.createElement('option');
+            o.value = a.account_id;
+            o.textContent = a.short_name + ' - ' + a.name;
+            sel.appendChild(o);
+        });
+    });
+}
+
+function renderTable() {
+    const tb = document.getElementById('campaignBody');
+    if (!campaignData.length) {
+        tb.innerHTML = '<tr><td colspan="10" class="text-center">Tidak ada data</td></tr>';
+        return;
+    }
+    let html = '';
+    let totalSpend = 0, totalResults = 0;
+    let cprSum = 0, cpcSum = 0, ctrSum = 0, count = 0;
+    campaignData.forEach(c => {
+        const sc = c.status==='ACTIVE'?'status-active':'status-paused';
+        const cprCls = c.cpr>0&&c.cpr<=150000?'cpr-bagus':c.cpr>150000?'cpr-mahal':'';
+        const spend = parseFloat(c.spend)||0;
+        const hasil = parseInt(c.results)||0;
+        const cpr = parseFloat(c.cpr)||0;
+        const cpc = parseFloat(c.cpc)||0;
+        const ctr = parseFloat(c.ctr)||0;
+        totalSpend += spend;
+        totalResults += hasil;
+        cprSum += cpr;
+        cpcSum += cpc;
+        ctrSum += ctr;
+        count++;
+        html += '<tr>'+
+            '<td><span class="badge">'+c.short_name+'</span></td>'+
+            '<td class="camp-name-cell" title="'+c.campaign_name+'">'+c.campaign_name+'</td>'+
+            '<td><span class="status '+sc+'">'+c.status+'</span></td>'+
+            '<td class="num">'+fmtRp(spend)+'</td>'+
+            '<td class="num">'+hasil+'</td>'+
+            '<td class="num '+cprCls+'">'+fmtRp(cpr)+'</td>'+
+            '<td class="num">'+fmtRp(cpc)+'</td>'+
+            '<td class="num">'+ctr.toFixed(2)+'%</td>'+
+            '<td>'+(c.date?parseDate(c.date).toLocaleDateString('id-ID'):'')+'</td>'+
+            (window._guestMode ? '' : '<td class="admin-only">'+
+                '<button class="btn-toggle '+(c.status==='ACTIVE'?'btn-green':'btn-red')+'" '+
+                'onclick="toggleCampaign(\''+c.campaign_id+'\',\''+c.short_name+'\',\''+escapeHtml(c.campaign_name).replace(/'/g,"\\'")+'\',\''+c.status+'\',this)" '+
+                'title="'+(c.status==='ACTIVE'?'Klik untuk PAUSE':'Klik untuk AKTIFKAN')+'">'+
+                (c.status==='ACTIVE'?'⏸':'▶') +
+            '</button></td>')+'</tr>';
+    });
+    // Grand total row
+    const weightedCpr = totalResults > 0 ? totalSpend / totalResults : 0;
+    const avgCpc = count > 0 ? cpcSum / count : 0;
+    const avgCtr = count > 0 ? ctrSum / count : 0;
+    const totalCprCls = weightedCpr>0&&weightedCpr<=150000?'cpr-bagus':weightedCpr>150000?'cpr-mahal':'';
+    html += '<tr class="grand-total">'+
+        '<td colspan="2"><strong>TOTAL</strong></td>'+
+        '<td><strong>'+count+' cmp</strong></td>'+
+        '<td class="num"><strong>'+fmtRp(totalSpend)+'</strong></td>'+
+        '<td class="num"><strong>'+totalResults+'</strong></td>'+
+        '<td class="num '+totalCprCls+'"><strong>'+fmtRp(weightedCpr)+'</strong></td>'+
+        '<td class="num"><strong>'+fmtRp(avgCpc)+'</strong></td>'+
+        '<td class="num"><strong>'+avgCtr.toFixed(2)+'%</strong></td>'+
+        '<td></td></tr>';
+    tb.innerHTML = html;
+}
+
+function sortTable(col) {
+    if (sortCol===col) sortAsc=!sortAsc; else { sortCol=col; sortAsc=true; }
+    const keys = ['short_name','campaign_name','status','spend','results','cpr','cpc','ctr','date'];
+    const k = keys[col];
+    campaignData.sort((a,b) => {
+        let va=a[k], vb=b[k];
+        if (k==='ctr') { va=parseFloat(va); vb=parseFloat(vb); }
+        if (['spend','results','cpr','cpc'].includes(k)) { va=parseFloat(va)||0; vb=parseFloat(vb)||0; }
+        if (typeof va==='string') return sortAsc?va.localeCompare(vb):vb.localeCompare(va);
+        return sortAsc?va-vb:vb-va;
+    });
+    renderTable();
+    updateSortHeaders();
+}
+
+// ===== WINNING CAMPAIGN CARDS =====
+function renderWinningCards(data) {
+    const grid = document.getElementById('winningGrid');
+    const countLabel = document.getElementById('winCount');
+    const list = data || campaignData;
+
+    if (!list.length) {
+        grid.innerHTML = '<div class="muted">Tidak ada data</div>';
+        countLabel.textContent = 'Tidak ada data';
+        return;
+    }
+
+    // Filter: hasil > 0, sort by CPR termurah
+    const winning = list
+        .filter(c => parseInt(c.results) > 0)
+        .sort((a, b) => (parseFloat(a.cpr)||999999) - (parseFloat(b.cpr)||999999))
+        .slice(0, 5);
+
+    if (!winning.length) {
+        grid.innerHTML = '<div class="muted">Belum ada campaign dengan hasil konversi di periode ini</div>';
+        countLabel.textContent = 'Belum ada data konversi';
+        return;
+    }
+
+    countLabel.textContent = 'Top 5 dari ' + list.length + ' campaign';
+
+    const colors = {'G1':'#6c5ce7','G2':'#00b894','G3':'#fdcb6e','G4':'#fd79a8'};
+    let html = '';
+    winning.forEach((c, i) => {
+        const color = colors[c.short_name] || '#6c5ce7';
+        const cprCls = c.cpr>0&&c.cpr<=150000?'cpr-bagus':c.cpr>150000?'cpr-mahal':'';
+        html += '<div class="winning-card" style="border-left-color:'+color+'">' +
+            '<div class="rank">#' + (i+1) + '</div>' +
+            '<div class="wname" title="'+c.campaign_name+'">'+escapeHtml(c.campaign_name)+'</div>' +
+            '<div class="wacc">' + c.short_name + '</div>' +
+            '<div class="wstats">' +
+                '<div class="ws"><div class="wval">'+fmtRp(c.spend)+'</div><div class="wlabel">Spend</div></div>' +
+                '<div class="ws"><div class="wval">'+c.results+'</div><div class="wlabel">Hasil</div></div>' +
+                '<div class="ws"><div class="wval '+cprCls+'">'+fmtRp(c.cpr)+'</div><div class="wlabel">CPR</div></div>' +
+            '</div></div>';
+    });
+    grid.innerHTML = html;
+}
+
+function updateSortHeaders() {
+    const labels = ['Akun', 'Nama Campaign', 'Status', 'Spend', 'Hasil', 'CPR', 'CPC', 'CTR', 'Tanggal'];
+    document.querySelectorAll('#campaignTable thead th').forEach((th, i) => {
+        if (i === 9) return; // skip Aksi column
+        const arrow = (i === sortCol) ? (sortAsc ? ' ▲' : ' ▼') : ' ⇅';
+        th.innerHTML = labels[i] + arrow;
+    });
+}
+
+function escapeHtml(str) {
+    if (!str) return '';
+    return str.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+// ===== LLM ANALYSIS =====
+function generateAnalysis() {
+    const btn = document.getElementById('analyzeBtn');
+    const output = document.getElementById('analysisOutput');
+    const df = document.getElementById('dateFrom').value;
+    const dt = document.getElementById('dateTo').value;
+    
+    if (!campaignData.length) {
+        showToast('❌ Tidak ada data untuk dianalisis','error');
+        return;
+    }
+    
+    btn.disabled = true;
+    btn.innerHTML = '⏳ Menganalisis...';
+    output.className = 'llm-box loading';
+    output.innerHTML = 'Menganalisis ' + campaignData.length + ' campaign...';
+    
+    fetch('/api/analisis/kampanye/llm', {
+        method: 'POST',
+        headers: {'Content-Type':'application/json'},
+        body: JSON.stringify({
+            date_from: df,
+            date_to: dt,
+            campaigns: campaignData.slice(0, 100) // max 100 campaign untuk LLM
+        })
+    }).then(r => r.json()).then(res => {
+        if (res.status === 'success') {
+            output.className = 'llm-box';
+            output.innerHTML = res.analysis;
+        } else {
+            output.className = 'llm-box';
+            output.innerHTML = '⚠️ Gagal: ' + (res.message || 'Unknown error');
+        }
+    }).catch(err => {
+        output.className = 'llm-box';
+        output.innerHTML = '⚠️ Error: ' + err.message;
+    }).finally(() => {
+        btn.disabled = false;
+        btn.innerHTML = '🔍 Generate Analisis';
+    });
+}
+
+// ===== MANUAL SYNC =====
+function syncData() {
+    const btn = document.getElementById('syncBtn');
+    btn.disabled = true;
+    btn.innerHTML = '⏳ Sync...';
+    showToast('🔄 Sync data dari Meta Ads...', 'info');
+
+    const today = getLocalDate();
+    fetch('/api/fetch?since='+today+'&until='+today, {method:'POST'})
+    .then(r => r.json()).then(res => {
+        if (res.status === 'success') {
+            showToast('✅ Sync berhasil! ' + res.total_saved + ' campaign tersimpan', 'success');
+            loadData(); // Refresh tabel
+        } else {
+            showToast('⚠️ Sync gagal: ' + (res.message || 'Unknown'), 'error');
+        }
+    }).catch(err => {
+        showToast('❌ Error: ' + err.message, 'error');
+    }).finally(() => {
+        btn.disabled = false;
+        btn.innerHTML = '🔄 Sync';
+    });
+}
+
+// ===== UTILITY =====
+function parseDate(d) {
+    if (!d) return null;
+    if (/^\d{4}-\d{2}-\d{2}$/.test(d)) { const p=d.split('-'); return new Date(p[0],p[1]-1,p[2]); }
+    const t=new Date(d); return isNaN(t.getTime())?null:t;
+}
+function fmtRp(val) { val=parseFloat(val)||0; return 'Rp'+Math.round(val).toString().replace(/\B(?=(\d{3})+(?!\d))/g,'.'); }
+
+// ===== CAMPAIGN TOGGLE =====
+let _toggleTarget = null;
+function toggleCampaign(campaignId, shortName, campaignName, currentStatus, btn) {
+    // Kalo lagi ACTIVE → minta konfirmasi dulu
+    if (currentStatus === 'ACTIVE') {
+        _toggleTarget = { campaignId, shortName, campaignName, btn };
+        document.getElementById('toggleModalName').textContent = shortName + ' — ' + campaignName;
+        document.getElementById('toggleModal').classList.add('show');
+        return;
+    }
+
+    // Kalo lagi PAUSED → langsung aktifin
+    _executeToggle(campaignId, shortName, campaignName, 'ACTIVE', btn);
+}
+function confirmToggle() {
+    if (!_toggleTarget) return;
+    const t = _toggleTarget;
+    document.getElementById('toggleModal').classList.remove('show');
+    _executeToggle(t.campaignId, t.shortName, t.campaignName, 'PAUSED', t.btn);
+    _toggleTarget = null;
+}
+function cancelToggle() {
+    document.getElementById('toggleModal').classList.remove('show');
+    _toggleTarget = null;
+}
+function _executeToggle(campaignId, shortName, campaignName, newStatus, btn) {
+    const label = newStatus === 'PAUSED' ? 'di-pause' : 'diaktifkan';
+
+    btn.disabled = true;
+    btn.textContent = '⏳';
+
+    fetch('/api/campaign/toggle', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({
+            campaign_id: campaignId,
+            status: newStatus,
+            campaign_name: campaignName
+        })
+    }).then(r => r.json()).then(res => {
+        if (res.status === 'ok') {
+            showToggleToast(`✅ ${shortName} ${label}`, 'success');
+            loadData();
+        } else {
+            showToggleToast(res.message || 'Gagal', 'error');
+            btn.disabled = false;
+            btn.textContent = newStatus === 'PAUSED' ? '▶' : '⏸';
+        }
+    }).catch(err => {
+        showToggleToast('Error: ' + err.message, 'error');
+        btn.disabled = false;
+        btn.textContent = newStatus === 'PAUSED' ? '▶' : '⏸';
+    });
+}
+function showToggleToast(msg, type) {
+    const t = document.createElement('div');
+    t.className = 'toast-toggle ' + type;
+    t.textContent = msg;
+    document.body.appendChild(t);
+    setTimeout(() => t.remove(), 3000);
+}
+</script>
+<!-- TOGGLE CONFIRM MODAL — cuma muncul pas pause (ACTIVE→PAUSED) -->
+<div class="modal-overlay" id="toggleModal">
+    <div class="modal-box">
+        <h3>⏸ Pause Campaign</h3>
+        <p>Yakin mau pause campaign ini?</p>
+        <div class="modal-campaign-name" id="toggleModalName"></div>
+        <div class="modal-actions">
+            <button class="btn-modal-cancel" onclick="cancelToggle()">Batal</button>
+            <button class="btn-modal-confirm" onclick="confirmToggle()">⏸ Ya, Pause!</button>
+        </div>
+    </div>
+</div>
+</body>
+</html>

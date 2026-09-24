@@ -1,0 +1,36 @@
+{# Dropdown pilih Produk (dari Data Produk /produk) — dipakai bareng halaman generator:
+   storyboard, copywriting, adset. Disimpan sebagai include supaya 3 halaman nggak drift.
+   ID elemen sengaja tetap `pdProductSelect` biar JS tiap halaman tinggal baca nilainya dan
+   ngirim `product_id` ke endpoint generate. Kosong = pakai teks default produk (perilaku lama). #}
+<style>
+.pdsel-wrap {
+    display: flex; align-items: center; gap: 10px; flex-wrap: wrap;
+    margin-bottom: 16px; padding: 10px 14px; border-radius: 14px;
+    background: var(--bg-card, #12121a); border: 1px solid var(--border, #1e1e30);
+}
+.pdsel-label { font-size: 0.75rem; font-weight: 600; color: var(--text-muted, #8b8b9e); white-space: nowrap; }
+.pdsel {
+    font-family: 'Inter', sans-serif; font-size: 0.8rem; padding: 8px 12px; min-width: 210px; cursor: pointer;
+    border-radius: 10px; border: 1px solid var(--border, #1e1e30);
+    background: var(--bg, #0a0a0f); color: var(--text, #fff);
+}
+.pdsel:focus { outline: none; border-color: var(--accent, #6c5ce7); }
+.pdsel-hint { font-size: 0.7rem; color: var(--text-muted, #8b8b9e); }
+.pdsel-hint a { color: var(--accent-light, #a29bfe); }
+</style>
+<div class="pdsel-wrap">
+    <label class="pdsel-label" for="pdProductSelect">🏷️ Produk</label>
+    <select class="pdsel" id="pdProductSelect">
+        <option value="">— Pakai default —</option>
+        {% for p in (products or []) %}
+        <option value="{{ p.id }}">{{ p.name }}</option>
+        {% endfor %}
+    </select>
+    <span class="pdsel-hint">
+        {%- if products -%}
+            Dipilih → prompt ngikutin nama, deskripsi, manfaat &amp; promo produk itu.
+        {%- else -%}
+            Belum ada produk. <a href="/produk">Tambah di Data Produk</a> dulu.
+        {%- endif -%}
+    </span>
+</div>

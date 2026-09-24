@@ -1,0 +1,1248 @@
+<!DOCTYPE html>
+<html lang="id" data-theme="dark">
+<head>
+<link rel="icon" type="image/png" href="/static/favicon.png">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Custom Audience | Kowalski Ads Center</title>
+<script>!function(){var t=localStorage.getItem('rg-theme')||'dark';document.documentElement.setAttribute('data-theme',t)}()</script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/static/style.css?v=3">
+<style>
+:root {
+    --bg: #0a0a0f;
+    --bg-card: #12121a;
+    --bg-card-hover: #1a1a2e;
+    --accent: #6c5ce7;
+    --accent-light: #a29bfe;
+    --accent-gradient: linear-gradient(135deg, #6c5ce7, #fd79a8);
+    --text: #e4e4e7;
+    --text-muted: #888899;
+    --border: #1e1e30;
+    --success: #00b894;
+    --warning: #fdcb6e;
+    --danger: #ff6b6b;
+}
+[data-theme="light"] {
+    --bg: #f8f9fc;
+    --bg-card: #ffffff;
+    --bg-card-hover: #f0f2f8;
+    --text: #1a1a2e;
+    --text-muted: #6b7280;
+    --border: #e5e7eb;
+    --success: #059669;
+    --warning: #d97706;
+    --danger: #dc2626;
+}
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body {
+    font-family: 'Inter', -apple-system, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.6;
+}
+/* Topbar */
+.topbar {
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    z-index: 100;
+    background: rgba(10,10,15,0.85);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border-bottom: 1px solid var(--border);
+    padding: 0 20px;
+    height: 52px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+[data-theme="light"] .topbar {
+    background: rgba(255,255,255,0.85);
+}
+.topbar-left { display: flex; align-items: center; gap: 12px; }
+.topbar-left .logo {
+    font-weight: 800;
+    font-size: 1rem;
+}
+.topbar-right { display: flex; align-items: center; gap: 10px; }
+.theme-toggle {
+    background: none; border: 1px solid var(--border);
+    border-radius: 8px; padding: 4px 10px;
+    cursor: pointer; font-size: 1rem;
+    color: var(--text-muted);
+    transition: all 0.2s;
+}
+.theme-toggle:hover { border-color: var(--accent); color: var(--text); }
+.topbar-date { font-size: 0.75rem; color: var(--text-muted); }
+
+.sidebar-toggle {
+    background: none; border: 1px solid var(--border);
+    border-radius: 8px; padding: 4px 8px;
+    cursor: pointer; font-size: 1rem;
+    color: var(--text-muted);
+    transition: all 0.2s;
+}
+.sidebar-toggle:hover { border-color: var(--accent); color: var(--text); }
+
+/* Main */
+.main {
+    margin-top: 52px;
+    margin-left: 220px;
+    padding: 20px;
+    transition: margin-left 0.25s ease;
+}
+.main.expanded { margin-left: 0; }
+
+/* Page Header */
+.page-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 20px;
+    flex-wrap: wrap;
+    gap: 12px;
+    position: sticky;
+    top: 52px;
+    z-index: 99;
+    background: var(--bg);
+    padding-top: 8px;
+    padding-bottom: 4px;
+}
+.page-header h1 {
+    font-size: 1.4rem;
+    font-weight: 800;
+}
+.header-actions {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    flex-wrap: wrap;
+}
+
+/* Buttons */
+.btn {
+    font-family: inherit;
+    font-size: 0.75rem;
+    font-weight: 600;
+    padding: 6px 12px;
+    border-radius: 8px;
+    border: 1px solid var(--border);
+    background: var(--bg-card);
+    color: var(--text);
+    cursor: pointer;
+    transition: all 0.2s;
+    white-space: nowrap;
+}
+.btn:hover { border-color: var(--accent); background: var(--bg-card-hover); }
+.btn-primary {
+    background: var(--accent);
+    border-color: var(--accent);
+    color: #fff;
+}
+.btn-primary:hover { background: #5a4bd1; border-color: #5a4bd1; }
+.btn-active { background: var(--accent); border-color: var(--accent); color: #fff; }
+.btn-active:hover { background: #5a4bd1; border-color: #5a4bd1; }
+.btn-sm { font-size: 0.7rem; padding: 4px 10px; }
+.btn:disabled { opacity: 0.5; cursor: not-allowed; }
+
+.select {
+    font-family: inherit;
+    font-size: 0.75rem;
+    padding: 5px 10px;
+    border-radius: 8px;
+    border: 1px solid var(--border);
+    background: var(--bg-card);
+    color: var(--text);
+    cursor: pointer;
+}
+.select:focus { outline: none; border-color: var(--accent); }
+
+/* Summary Grid */
+.summary-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 12px;
+    margin-bottom: 20px;
+}
+.summary-card {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 16px;
+    transition: all 0.3s;
+}
+.summary-card:hover {
+    border-color: var(--accent);
+    transform: translateY(-2px);
+}
+.summary-card.total {
+    background: linear-gradient(135deg, rgba(108,92,231,0.08), rgba(253,121,168,0.05));
+    border-color: rgba(108,92,231,0.3);
+}
+.summary-card.total:hover { border-color: var(--accent); }
+.card-header-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 12px;
+}
+.card-dot {
+    width: 10px; height: 10px;
+    border-radius: 50%;
+    flex-shrink: 0;
+}
+.card-sname {
+    font-weight: 700;
+    font-size: 0.8rem;
+}
+.card-stats {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+}
+.card-stat { }
+.card-stat .val {
+    font-weight: 700;
+    font-size: 1rem;
+    letter-spacing: -0.3px;
+}
+.card-stat .lbl {
+    font-size: 0.6rem;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-top: 1px;
+}
+.cpr-bagus { color: var(--success); }
+.cpr-mahal { color: var(--danger); }
+.card-stat .val.cpr-bagus { -webkit-text-fill-color: var(--success); }
+.card-stat .val.cpr-mahal { -webkit-text-fill-color: var(--danger); }
+
+/* Charts */
+.chart-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+    margin-bottom: 20px;
+}
+.chart-card {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 20px;
+    transition: all 0.3s;
+}
+.chart-card:hover { border-color: var(--accent); }
+.chart-card h3 {
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--text-muted);
+    margin-bottom: 16px;
+}
+.chart-card canvas {
+    width: 100% !important;
+    max-height: 240px;
+}
+.chart-card canvas#rasioBudgetChart,
+.chart-card canvas#rasioHasilChart {
+    max-height: 200px;
+}
+
+/* CPR Table */
+.card {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 20px;
+    transition: all 0.3s;
+    margin-bottom: 16px;
+}
+.card:hover { border-color: var(--accent); }
+.card h3 {
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--text-muted);
+    margin-bottom: 12px;
+}
+.table-wrap { overflow-x: auto; }
+.table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.78rem;
+}
+.table th {
+    text-align: left;
+    padding: 8px 10px;
+    font-weight: 600;
+    color: var(--text-muted);
+    border-bottom: 1px solid var(--border);
+    white-space: nowrap;
+    cursor: pointer;
+    user-select: none;
+}
+.table th:hover { color: var(--text); }
+.table td {
+    padding: 7px 10px;
+    border-bottom: 1px solid var(--border);
+    white-space: nowrap;
+}
+.table tbody tr:hover { background: var(--bg-card-hover); }
+.table .num { text-align: right; }
+.table .cpr-badge {
+    font-weight: 600;
+    padding: 2px 6px;
+    border-radius: 4px;
+    display: inline-block;
+}
+.table .cpr-badge.green { color: var(--success); }
+.table .cpr-badge.red { color: var(--danger); }
+.table .cpr-badge.neutral { color: var(--text-muted); }
+
+/* Toast */
+.toast {
+    position: fixed;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    padding: 10px 20px;
+    border-radius: 10px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    color: var(--text);
+    z-index: 9999;
+    opacity: 0;
+    transition: all 0.3s;
+    pointer-events: none;
+}
+.toast.toast-success { opacity: 1; border-color: var(--success); color: var(--success); }
+.toast.toast-error { opacity: 1; border-color: var(--danger); color: var(--danger); }
+
+/* Empty / Loading */
+.skeleton {
+    background: linear-gradient(90deg, var(--bg-card) 25%, var(--bg-card-hover) 50%, var(--bg-card) 75%);
+    background-size: 200% 100%;
+    animation: shimmer 1.5s infinite;
+    border-radius: 8px;
+}
+@keyframes shimmer { 0% { background-position: 200% 0; } 100% { background-position: -200% 0; } }
+
+/* Sidebar Backdrop (mobile) */
+.sidebar-backdrop {
+    display: none;
+    position: fixed;
+    inset: 0;
+    z-index: 55;
+    background: rgba(0,0,0,0.4);
+    opacity: 0;
+    transition: opacity 0.25s ease;
+}
+@media (max-width: 768px) {
+    .sidebar-backdrop.show {
+        display: block;
+        opacity: 1;
+    }
+}
+
+/* Mobile — Sidebar overlay */
+@media (max-width: 768px) {
+    .sidebar {
+        width: 240px !important;
+        transform: translateX(-100%);
+        transition: transform 0.25s ease;
+        border-right: 1px solid var(--border);
+        z-index: 60;
+        box-shadow: 4px 0 20px rgba(0,0,0,0.3);
+    }
+    .sidebar.collapsed {
+        transform: translateX(-100%) !important;
+        width: 240px !important;
+        border-right: 1px solid var(--border) !important;
+    }
+    .sidebar:not(.collapsed) {
+        transform: translateX(0);
+    }
+    .main {
+        margin-left: 0 !important;
+        padding: 16px;
+    }
+    .page-header { flex-direction: column; position: static; }
+    .page-header h1 { font-size: 1.2rem; }
+    .header-actions {
+        width: 100%;
+        overflow-x: auto;
+        flex-wrap: nowrap;
+        gap: 4px;
+        padding-bottom: 4px;
+        -webkit-overflow-scrolling: touch;
+    }
+    .header-actions .select { width: 110px; flex-shrink: 0; }
+    .header-actions .btn { flex-shrink: 0; font-size: 0.65rem; padding: 5px 8px; }
+    .summary-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 8px;
+    }
+    .summary-card { padding: 12px; }
+    .card-stats { grid-template-columns: 1fr 1fr; gap: 6px; }
+    .card-stat .val { font-size: 0.9rem; }
+    .chart-grid { grid-template-columns: 1fr; gap: 12px; }
+    .chart-card { padding: 14px; }
+    .chart-card canvas { max-height: 200px; }
+    .topbar-date { display: none; }
+}
+@media (max-width: 480px) {
+    .sidebar { width: 100% !important; }
+    .summary-grid { grid-template-columns: 1fr 1fr; gap: 6px; }
+    .summary-card { padding: 10px; }
+    .card-stats { gap: 4px; }
+    .card-header-row { margin-bottom: 8px; }
+}
+
+/* ===== Custom Audience Page ===== */
+.topbar-inner { width:100%; display:flex; align-items:center; justify-content:space-between; gap:12px; }
+.ca-wrap { max-width: none; width: 100%; }
+.ca-header { display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:16px; flex-wrap:wrap; gap:10px; }
+.ca-header h1 { font-size:1.2rem; font-weight:800; display:flex; align-items:center; gap:8px; }
+.ca-desc { font-size:0.8rem; color:var(--text-muted); margin-top:4px; }
+
+/* Account grid (sama kayak campaign studio) */
+.acc-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(220px,1fr)); gap:10px; }
+.acc-card { background:var(--bg-card); border:1px solid var(--border); border-radius:12px; padding:12px 14px; cursor:pointer; transition:all 0.2s; position:relative; }
+.acc-card:hover { border-color:var(--accent); }
+.acc-card.selected { border-color:var(--accent); background:rgba(108,92,231,0.08); }
+.acc-card .acc-name { font-size:0.82rem; font-weight:700; }
+.acc-card .acc-info { font-size:0.68rem; color:var(--text-muted); font-family:monospace; margin-top:2px; }
+.acc-card .acc-event { display:inline-block; font-size:0.6rem; font-weight:700; padding:2px 8px; border-radius:4px; margin-top:6px; }
+.acc-event.lead { background:rgba(0,184,148,0.15); color:#00b894; }
+.acc-event.atc { background:rgba(108,92,231,0.15); color:#a29bfe; }
+
+/* Table */
+.table-wrap { overflow-x:auto; }
+.table { width:100%; border-collapse:collapse; font-size:0.8rem; }
+.table th { text-align:left; padding:10px 12px; color:var(--text-muted); font-weight:600; font-size:0.68rem; text-transform:uppercase; letter-spacing:0.4px; border-bottom:1px solid var(--border); white-space:nowrap; }
+.table td { padding:10px 12px; border-bottom:1px solid var(--border); vertical-align:middle; }
+.table tr:hover td { background:var(--bg-hover); }
+.badge { display:inline-block; font-size:0.62rem; font-weight:700; padding:2px 8px; border-radius:6px; }
+.badge-custom { background:rgba(108,92,231,0.15); color:#a29bfe; }
+.badge-lookalike { background:rgba(253,121,168,0.15); color:#fd79a8; }
+.badge-src { background:rgba(136,136,153,0.15); color:var(--text-muted); }
+.badge-ok { background:rgba(0,184,148,0.15); color:#00b894; }
+.badge-warn { background:rgba(253,203,110,0.15); color:#fdcb6e; }
+.btn-mini { font-size:0.68rem; padding:3px 9px; border-radius:6px; }
+.exclude-tag { font-size:0.62rem; color:#00b894; }
+
+/* Modal */
+.modal-overlay { display:none; position:fixed; inset:0; background:rgba(0,0,0,0.6); z-index:200; align-items:flex-start; justify-content:center; padding:40px 16px; overflow-y:auto; }
+.modal-overlay.active { display:flex; }
+.modal { background:var(--bg-card); border:1px solid var(--border); border-radius:16px; max-width:560px; width:100%; padding:20px; box-shadow:0 20px 60px var(--shadow); }
+.modal h3 { font-size:1rem; font-weight:800; margin-bottom:4px; }
+.modal-sub { font-size:0.72rem; color:var(--text-muted); margin-bottom:14px; }
+.modal .form-group { margin-bottom:14px; }
+.modal-actions { display:flex; justify-content:flex-end; gap:8px; margin-top:16px; }
+.form-group label { display:block; font-size:0.7rem; font-weight:700; margin-bottom:6px; color:var(--text); }
+.form-group label .req { color:var(--danger); }
+.form-group input[type=text], .form-group input[type=number], .form-group select, .form-group textarea {
+    width:100%; padding:9px 12px; border-radius:8px; border:1px solid var(--border);
+    background:var(--bg); color:var(--text); font-size:0.8rem; font-family:'Inter',sans-serif; outline:none;
+}
+.form-group input:focus, .form-group select:focus { border-color:var(--accent); }
+.form-row { display:flex; gap:10px; flex-wrap:wrap; }
+.form-row .form-group { flex:1; min-width:140px; }
+
+/* Type chips (Custom / Lookalike) */
+.type-chips { display:flex; gap:8px; }
+.type-chip { flex:1; text-align:center; padding:10px; border-radius:10px; border:1px solid var(--border); background:var(--bg); cursor:pointer; font-size:0.78rem; font-weight:700; transition:all 0.2s; }
+.type-chip:hover { border-color:var(--accent); }
+.type-chip.active { border-color:var(--accent); background:rgba(108,92,231,0.12); color:var(--accent-light); }
+.type-chip .ic { font-size:1.1rem; display:block; margin-bottom:4px; }
+
+/* Source chips (Pixel / CSV / Both) */
+.src-chips { display:flex; gap:8px; }
+.src-chip { flex:1; text-align:center; padding:8px; border-radius:8px; border:1px solid var(--border); background:var(--bg); cursor:pointer; font-size:0.72rem; font-weight:600; transition:all 0.2s; }
+.src-chip:hover { border-color:var(--accent); }
+.src-chip.active { border-color:var(--accent); background:rgba(108,92,231,0.12); color:var(--accent-light); }
+
+/* Toggle */
+.toggle-row-ca { display:flex; align-items:center; gap:10px; cursor:pointer; padding:10px 12px; background:var(--bg); border:1px solid var(--border); border-radius:10px; }
+.toggle-row-ca .toggle-label { font-size:0.78rem; font-weight:600; flex:1; }
+.toggle-row-ca .toggle-sub { font-size:0.65rem; color:var(--text-muted); margin-top:2px; }
+.toggle-switch { width:40px; height:22px; border-radius:20px; background:var(--border); position:relative; transition:background 0.2s; flex-shrink:0; }
+.toggle-switch::after { content:''; position:absolute; top:2px; left:2px; width:18px; height:18px; border-radius:50%; background:#fff; transition:left 0.2s; }
+.toggle-switch.on { background:var(--accent); }
+.toggle-switch.on::after { left:20px; }
+
+/* Video picker */
+.video-select-box { display:flex; flex-wrap:wrap; align-items:center; gap:6px; padding:8px 10px; border:1px solid var(--border); border-radius:10px; background:var(--bg); cursor:text; }
+.video-select-tags { display:flex; flex-wrap:wrap; gap:6px; }
+.video-tag { display:inline-flex; align-items:center; gap:5px; background:rgba(108,92,231,0.14); color:var(--accent-light); border:1px solid rgba(108,92,231,0.35); border-radius:6px; padding:3px 8px; font-size:0.68rem; max-width:230px; }
+.video-tag span { overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+.video-tag button { background:none; border:none; color:var(--accent-light); cursor:pointer; font-size:0.75rem; line-height:1; padding:0 2px; }
+.video-dropdown { position:absolute; z-index:50; left:0; right:0; margin-top:4px; background:var(--bg); border:1px solid var(--border); border-radius:10px; box-shadow:0 8px 24px rgba(0,0,0,0.18); overflow:hidden; }
+.video-dropdown-list { max-height:220px; overflow-y:auto; }
+.video-opt { display:flex; align-items:center; gap:10px; padding:8px 12px; cursor:pointer; transition:background 0.15s; }
+.video-opt:hover { background:rgba(108,92,231,0.08); }
+.video-opt.selected { background:rgba(108,92,231,0.14); }
+.video-opt img { width:52px; height:34px; object-fit:cover; border-radius:6px; background:var(--border); flex-shrink:0; }
+.video-opt .v-title { font-size:0.74rem; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+.video-opt .v-meta { font-size:0.62rem; color:var(--text-muted); margin-top:2px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+.video-opt .v-check { color:var(--accent-light); font-size:0.8rem; }
+.video-empty { padding:14px; text-align:center; color:var(--text-muted); font-size:0.7rem; }
+
+/* CSV dropzone */
+.dropzone { border:2px dashed var(--border); border-radius:10px; padding:20px; text-align:center; color:var(--text-muted); font-size:0.75rem; cursor:pointer; transition:border-color 0.2s; background:var(--bg); }
+.dropzone:hover, .dropzone.over { border-color:var(--accent); color:var(--text); }
+.dropzone .dz-ic { font-size:1.4rem; display:block; margin-bottom:6px; }
+.dz-file { display:flex; align-items:center; gap:8px; margin-top:8px; font-size:0.72rem; color:var(--success); }
+
+/* Info banner */
+.ca-info { background:rgba(108,92,231,0.08); border:1px solid rgba(108,92,231,0.25); border-radius:10px; padding:10px 14px; font-size:0.72rem; color:var(--text-muted); margin-bottom:16px; display:flex; gap:8px; align-items:center; }
+.dummy-note { font-size:0.62rem; color:var(--warning); margin-left:6px; }
+
+.empty-state { text-align:center; padding:40px 0; color:var(--text-muted); font-size:0.8rem; }
+</style>
+</head>
+<body>
+
+<!-- TOPBAR -->
+<header class="topbar">
+    <div class="topbar-inner">
+        <div class="topbar-left">
+            <button class="sidebar-toggle" id="sidebarToggle" onclick="toggleSidebar()">☰</button>
+            <img src="/static/kowalski-logo.png" alt="KS" style="height:26px;width:auto;object-fit:contain;border-radius:6px"> <span class="logo">Kowalski Ads Center</span>
+            <span class="badge" style="margin-left:8px;font-size:0.6rem;padding:2px 8px;background:linear-gradient(135deg,#6c5ce7,#fd79a8);color:#fff;border-radius:4px">Alpha Testing</span>
+        </div>
+        <div class="topbar-right">
+            <button class="theme-toggle" onclick="toggleTheme()" title="Ganti tema"><i class="bi bi-circle-half" aria-hidden="true"></i></button>
+            <span class="topbar-date" id="currentDate"></span>
+        </div>
+    </div>
+</header>
+
+<div id="sidebarBackdrop" class="sidebar-backdrop" onclick="toggleSidebar()"></div>
+
+<!-- SIDEBAR -->
+<aside class="sidebar collapsed" id="sidebar">
+    <div class="sidebar-brand">
+        <img src="/static/kowalski-logo.png" alt="KS" class="brand-logo-img" style="width:30px;height:30px;object-fit:contain;border-radius:8px">
+        <div>
+            <div class="brand-name">Kowalski Ads Center</div>
+            <div class="brand-sub">Meta Ads Report</div>
+        </div>
+    </div>
+    <nav class="sidebar-nav">
+                <a class="nav-item {{ 'active' if group=='generos' or group=='genmilk' else '' }}" href="#" onclick="toggleSubmenu(event, 'dashSubs')">
+            <span><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg></span> <span>Dashboard</span>
+            <span class="nav-arrow {{ 'open' if group=='generos' or group=='genmilk' else '' }}"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg></span>
+        </a>
+        <div class="nav-subs {{ 'open' if group=='generos' or group=='genmilk' else '' }}" id="dashSubs">
+            <a href="/dashboard" class="nav-sub {{ 'active' if group=='generos' else '' }}"><span><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg></span> <span>Generos</span></a>
+            <a href="/dashboard/genmilk" class="nav-sub {{ 'active' if group=='genmilk' else '' }}"><span><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2.69l5.66 5.66a8 8 0 1 1-11.31 0z"/></svg></span> <span>GenMilk</span></a>
+        </div>
+
+        <div class="nav-section">Analisis</div>
+        <a class="nav-item" href="#" onclick="toggleSubmenu(event, 'analisisSubs')">
+            <span><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg></span> <span>Analisis</span>
+            <span class="nav-arrow "><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg></span>
+        </a>
+        <div class="nav-subs " id="analisisSubs">
+            <a href="/analisis/kampanye" class="nav-sub "><span><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg></span> <span>Kampanye</span></a>
+            <a href="/analisis/adset" class="nav-sub "><span><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg></span> <span>Adset</span></a>
+            <a href="/analisis/iklan" class="nav-sub "><span><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z"/></svg></span> <span>Iklan</span></a>
+        </div>
+
+        <div class="nav-section admin-only">Creator</div>
+        <a class="nav-item admin-only" href="#" onclick="toggleSubmenu(event, 'creatorSubs')">
+            <span><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="3" width="20" height="18" rx="3" ry="3"/><polygon points="10 8 16 12 10 16 10 8"/></svg></span> <span>Creator</span>
+            <span class="nav-arrow "><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg></span>
+        </a>
+        <div class="nav-subs " id="creatorSubs">
+            <a href="/vo-generator" class="nav-sub admin-only "><span><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" y1="19" x2="12" y2="22"/></svg></span> <span>Generator VO</span></a>
+            <a href="/storyboard" class="nav-sub admin-only "><span><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z"/></svg></span> <span>Storyboard</span></a>
+            <a href="/copywriting-generator" class="nav-sub admin-only "><span><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg></span> <span>Copywriting</span></a>
+            <a href="/adset-generator" class="nav-sub admin-only "><span><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg></span> <span>Adset</span></a>
+        </div>
+
+        <div class="nav-section admin-only">Tools</div>
+        <a class="nav-item admin-only" href="#" onclick="toggleSubmenu(event, 'toolsSubs')">
+            <span><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg></span> <span>Tools</span>
+            <span class="nav-arrow open"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg></span>
+        </a>
+        <div class="nav-subs open" id="toolsSubs">
+            <a href="/dev/campaign-studio" class="nav-sub admin-only "><span><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4.5 16.5c-1.5 1.26-2 5-2 5s3.74-.5 5-2c.71-.84.7-2.13-.06-2.91a2.2 2.2 0 0 0-2.94-.09z"/><path d="M12 15l-3-3a22 22 0 0 1 2-3.95A12.88 12.88 0 0 1 22 2c0 2.72-.78 7.5-6 11a22.35 22.35 0 0 1-4 2z"/><path d="M9 12H4s.55-3.03 2-4c1.62-1.08 5 0 5 0"/><path d="M12 15v5s3.03-.55 4-2c1.08-1.62 0-5 0-5"/></svg></span> <span>Campaign Studio <span class="badge" style="margin-left:4px;font-size:0.55rem;padding:1px 6px;background:linear-gradient(135deg,#6c5ce7,#fd79a8);color:#fff;border-radius:4px">Final Testing</span></span></a>
+            <a href="/produk" class="nav-sub admin-only "><span><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.83z"/><line x1="7" y1="7" x2="7.01" y2="7"/></svg></span> <span>Data Produk</span></a>
+            <a href="/tren" class="nav-sub admin-only "><span><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg></span> <span>Tren Kreatif <span class="badge" style="margin-left:4px;font-size:0.55rem;padding:1px 6px;background:linear-gradient(135deg,#6c5ce7,#fd79a8);color:#fff;border-radius:4px">Baru</span></span></a>
+            <a href="/custom-audiences" class="nav-sub admin-only active"><span><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg></span> <span>Custom Audience </span></a>
+            <a href="/page-post" class="nav-sub admin-only "><span><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg></span> <span>Post Fanpage </span></a>
+            <a href="/dailyleveling" class="nav-sub admin-only "><span><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg></span> <span>Daily Leveling</span></a>
+            <a href="/cron-management" class="nav-sub admin-only "><span><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg></span> <span>Cron Management</span></a>
+            <a href="/kuota-9router" class="nav-sub admin-only "><span><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20V10"/><path d="M18 20V4"/><path d="M6 20v-4"/></svg></span> <span>Kuota 9Router</span></a>
+
+        </div>
+
+        <div class="nav-section">Report</div>
+        <a class="nav-item" href="#" onclick="toggleSubmenu(event, 'reportSubs')">
+            <span><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg></span> <span>Report</span>
+            <span class="nav-arrow "><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg></span>
+        </a>
+        <div class="nav-subs " id="reportSubs">
+            <a href="/roas" class="nav-sub "><span><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg></span> <span>ROAS Report</span></a>
+            <a href="/bank-konten" class="nav-sub admin-only "><span><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg></span> <span>Bank Konten</span></a>
+            <a href="/bank-konten/genmilk" class="nav-sub admin-only "><span><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2.69l5.66 5.66a8 8 0 1 1-11.31 0z"/></svg></span> <span>Bank Konten GenMilk</span></a>
+            <a href="/bank-kreatif" class="nav-sub admin-only "><span><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg></span> <span>Bank Kreatif</span></a>
+        </div>
+    </nav>
+    <div class="sidebar-user">
+        <div class="user-avatar">GA</div>
+        <div style="flex:1;min-width:0">
+            <div class="user-name">Gilang Aji</div>
+            <div class="user-role">Administrator</div>
+        </div>
+        <button class="btn-logout" onclick="logout()" title="Logout"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg></button>
+    </div>
+</aside>
+
+<main class="main expanded" id="mainContent">
+    <div class="ca-wrap">
+        <div class="ca-header">
+            <div>
+                <h1>🎯 Custom Audience</h1>
+                <div class="ca-desc">Kelola Custom Audience &amp; Audience Serupa (Lookalike) untuk semua akun — dipakai di Campaign Studio Step 2</div>
+            </div>
+            <button class="btn btn-primary" onclick="openModal()" style="font-size:0.8rem;padding:9px 16px">＋ Buat Audience</button>
+        </div>
+
+        <div class="ca-info">
+            <span>💡</span>
+            <span>Lookalike butuh seed = Custom Audience yang sudah ada (minimal ~1.000 user di Meta). Exclude Leads/ATC otomatis aktif biar nggak ditargetin ke orang yang udah konversi.</span>
+        </div>
+
+        <!-- Pilih Akun -->
+        <div class="form-group" style="margin-bottom:16px">
+            <label>Pilih Akun</label>
+            <div class="acc-grid" id="accGrid">
+                <div class="acc-card selected" data-acc="G1" data-event="LEAD" onclick="selectAcc(this)">
+                    <div class="acc-name">G1 — Generos Indonesia</div>
+                    <div class="acc-info">LEAD · act_314725990877293</div>
+                    <span class="acc-event lead">LEADS</span>
+                </div>
+                <div class="acc-card" data-acc="G2" data-event="LEAD" onclick="selectAcc(this)">
+                    <div class="acc-name">G2 — Generos Multivitamin</div>
+                    <div class="acc-info">LEAD · act_934880001670906</div>
+                    <span class="acc-event lead">LEADS</span>
+                </div>
+                <div class="acc-card" data-acc="G3" data-event="ATC" onclick="selectAcc(this)">
+                    <div class="acc-name">G3 — Vitamin Otak Anak</div>
+                    <div class="acc-info">ATC · act_1488472672014493</div>
+                    <span class="acc-event atc">PEMBELIAN</span>
+                </div>
+                <div class="acc-card" data-acc="G4" data-event="ATC" onclick="selectAcc(this)">
+                    <div class="acc-name">G4 — Generos Nusantara</div>
+                    <div class="acc-info">ATC · act_327433619915012</div>
+                    <span class="acc-event atc">PEMBELIAN</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tabel Audience -->
+        <div class="card">
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;flex-wrap:wrap;gap:8px">
+                <h3 style="font-size:0.85rem;font-weight:700">📋 Daftar Audience — <span id="accLabel">G1</span></h3>
+                <div style="display:flex;gap:6px;align-items:center">
+                    <select id="typeFilter" onchange="renderTable()" style="font-size:0.7rem;padding:5px 8px;border-radius:6px;border:1px solid var(--border);background:var(--bg-card);color:var(--text)">
+                        <option value="all">Semua Tipe</option>
+                        <option value="custom">Custom Audience</option>
+                        <option value="lookalike">Lookalike</option>
+                    </select>
+                </div>
+            </div>
+            <div class="table-wrap">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Nama</th>
+                            <th>Tipe</th>
+                            <th>Sumber</th>
+                            <th>Pixel</th>
+                            <th>Lookback</th>
+                            <th>Ukuran</th>
+                            <th>Status</th>
+                            <th>Exclude</th>
+                            <th>Dibuat</th>
+                            <th>Aksi</th>
+                        </tr>
+                    </thead>
+                    <tbody id="caTableBody"></tbody>
+                </table>
+                <div class="empty-state" id="caEmpty" style="display:none">📭 Belum ada audience. Klik "＋ Buat Audience" untuk mulai.</div>
+            </div>
+            <div style="margin-top:10px;font-size:0.62rem;color:var(--text-muted)">* Daftar diambil langsung dari Meta Ads API per akun. Ukuran audience (approximate_count) tidak tersedia di API token ini — ditampilkan "—".</div>
+        </div>
+    </div>
+</main>
+
+<!-- MODAL: Buat / Edit Audience -->
+<div class="modal-overlay" id="caModal" onclick="if(event.target===this)closeModal()">
+    <div class="modal">
+        <h3 id="caModalTitle">＋ Buat Custom Audience</h3>
+        <div class="modal-sub" id="caModalSub">Custom Audience dari pixel / CSV. Lookalike dari seed custom audience.</div>
+
+        <div class="form-group">
+            <label>Tipe Audience</label>
+            <div class="type-chips" id="typeChips">
+                <div class="type-chip active" data-type="custom" onclick="setType('custom')"><span class="ic">👥</span>Custom Audience</div>
+                <div class="type-chip" data-type="lookalike" onclick="setType('lookalike')"><span class="ic">✨</span>Audience Serupa (Lookalike)</div>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label>Nama Audience <span class="req">*</span></label>
+            <input type="text" id="caName" placeholder="Contoh: CA - Video Views 90d - G1">
+            <div style="font-size:0.62rem;color:var(--text-muted);margin-top:4px">Saran pola: CA / LAL - sumber - periode - akun</div>
+        </div>
+
+        <!-- ===== CUSTOM AUDIENCE FIELDS ===== -->
+        <div id="customFields">
+            <div class="form-group">
+                <label>Sumber Data</label>
+                <div class="src-chips" id="srcChips">
+                    <div class="src-chip active" data-src="pixel" onclick="setSource('pixel')">📊 Pixel</div>
+                    <div class="src-chip" data-src="csv" onclick="setSource('csv')">📄 CSV</div>
+                    <div class="src-chip" data-src="both" onclick="setSource('both')">📊+📄 Pixel &amp; CSV</div>
+                </div>
+            </div>
+
+            <div class="form-row" id="pixelFields">
+                <div class="form-group">
+                    <label>Pixel (dari akun terpilih)</label>
+                    <select id="caPixel">
+                        <option value="">— pilih pixel —</option>
+                        <!-- TODO backend: isi dari /api/pixels?acc=Gx -->
+                        <option>Pixel website akun (placeholder)</option>
+                    </select>
+                    <div style="font-size:0.62rem;color:var(--text-muted);margin-top:4px">Pixel khusus akun terpilih — nggak cross pixel antar akun</div>
+                </div>
+                <div class="form-group">
+                    <label>Lookback Window</label>
+                    <select id="caLookback">
+                        <option value="30">30 hari</option>
+                        <option value="60">60 hari</option>
+                        <option value="90" selected>90 hari</option>
+                        <option value="180">180 hari</option>
+                        <option value="365">365 hari</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="form-group" id="videoViewsField">
+                <div class="toggle-row-ca" onclick="toggleExcl(this, 'caVideoViews')">
+                    <div>
+                        <div class="toggle-label">📹 Ambil Video Views dari iklan/postingan berjalan</div>
+                        <div class="toggle-sub">Audience = orang yang nonton video iklan/postingan yang lagi running</div>
+                    </div>
+                    <div class="toggle-switch on" id="caVideoViews"></div>
+                </div>
+                <div id="caVideoSelectWrap" style="margin-top:10px;position:relative">
+                    <label>Pilih Video (bisa lebih dari satu)</label>
+                    <div class="video-select-box" id="caVideoSelect" onclick="this.querySelector('input').focus()">
+                        <div class="video-select-tags" id="caVideoTags"></div>
+                        <input type="text" id="caVideoSearch" placeholder="Ketik untuk cari video…" oninput="filterVideos(this.value)" onfocus="openVideoDropdown()" style="border:none;outline:none;background:transparent;flex:1;min-width:120px;font-size:0.8rem;color:inherit">
+                    </div>
+                    <div class="video-dropdown" id="caVideoDropdown" style="display:none">
+                        <div class="video-dropdown-list" id="caVideoList"></div>
+                        <div style="padding:8px 12px;font-size:0.68rem;color:var(--text-muted)">Video diurutkan dari views terbanyak (90 hari terakhir). Video tanpa data views = belum pernah jalan / baru dibuat.</div>
+                    </div>
+                    <div style="font-size:0.62rem;color:var(--text-muted);margin-top:4px" id="caVideoHint">Kosongkan = ambil semua Video Views dari pixel.</div>
+                </div>
+            </div>
+
+            <div class="form-group" id="csvFields" style="display:none">
+                <label>Upload File CSV (email / no. HP)</label>
+                <div class="dropzone" id="csvDrop" onclick="document.getElementById('csvInput').click()" ondragover="event.preventDefault();this.classList.add('over')" ondragleave="this.classList.remove('over')" ondrop="handleCsvDrop(event)">
+                    <span class="dz-ic">📄</span>
+                    <span>Klik atau tarik file CSV ke sini</span>
+                    <div style="font-size:0.62rem;margin-top:4px">Kolom: email dan/atau phone. Max 500MB (batas Meta).</div>
+                    <div class="dz-file" id="csvFileInfo" style="display:none"></div>
+                </div>
+                <input type="file" id="csvInput" accept=".csv,text/csv" style="display:none" onchange="handleCsvPick(this)">
+            </div>
+        </div>
+
+        <!-- ===== LOOKALIKE FIELDS ===== -->
+        <div id="lookalikeFields" style="display:none">
+            <div class="form-group">
+                <label>Source (Seed) Custom Audience <span class="req">*</span></label>
+                <select id="lalSource">
+                    <option value="">— pilih custom audience sebagai seed —</option>
+                    <!-- TODO backend: isi dari /api/custom-audiences?acc=Gx (hanya tipe custom) -->
+                    <option>CA - Video Views 90d - G1 (placeholder)</option>
+                </select>
+            </div>
+            <div class="form-row">
+                <div class="form-group">
+                    <label>Ukuran Lookalike (%)</label>
+                    <select id="lalSize">
+                        <option value="1">1% (paling mirip)</option>
+                        <option value="2">2%</option>
+                        <option value="3">3%</option>
+                        <option value="4">4%</option>
+                        <option value="5" selected>5%</option>
+                        <option value="10">10% (terluas)</option>
+                    </select>
+                    <div style="font-size:0.62rem;color:var(--text-muted);margin-top:4px">Semakin kecil %, makin mirip dengan seed.</div>
+                </div>
+                <div class="form-group">
+                    <label>Negara</label>
+                    <select id="lalCountry">
+                        <option value="ID" selected>Indonesia</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <div class="toggle-row-ca" onclick="toggleExcl(this, 'caExclude')">
+                <div>
+                    <div class="toggle-label">🚫 Exclude yang sudah Leads/ATC (otomatis)</div>
+                    <div class="toggle-sub">User yang udah submit lead / add to cart di periode exclude bakal dikecualikan dari audience</div>
+                </div>
+                <div class="toggle-switch on" id="caExclude"></div>
+            </div>
+        </div>
+
+        <div class="modal-actions">
+            <button class="btn btn-secondary" onclick="closeModal()">Batal</button>
+            <button class="btn btn-primary" onclick="saveAudience()">💾 Simpan Audience</button>
+        </div>
+    </div>
+</div>
+
+<script>
+// ===== ACCOUNTS =====
+const CA_ACCOUNTS = {
+    G1: { name: 'Generos Indonesia', event: 'LEAD', act: 'act_314725990877293' },
+    G2: { name: 'Generos Multivitamin', event: 'LEAD', act: 'act_934880001670906' },
+    G3: { name: 'Vitamin Otak Anak', event: 'ATC', act: 'act_1488472672014493' },
+    G4: { name: 'Generos Nusantara', event: 'ATC', act: 'act_327433619915012' }
+};
+
+let _audiences = {};
+let _pixels = [];
+let _videos = [];
+let _selectedVideos = new Map(); // video id -> {id, title, thumbnail}
+let _activeAcc = 'G1';
+let _modalType = 'custom';
+let _modalSrc = 'pixel';
+let _editingMetaId = null;
+
+// ===== DATA LOADER =====
+async function loadAudiences() {
+    try {
+        const r = await fetch(`/api/custom-audiences/meta?acc=${_activeAcc}`);
+        const d = await r.json();
+        if (d.status === 'ok') {
+            _audiences[_activeAcc] = (d.audiences || []).map(a => ({
+                meta_id: a.meta_id,
+                name: a.name,
+                type: a.type,
+                source: a.type === 'lookalike' ? 'lookalike' : 'pixel',
+                pixel: a.meta_subtype === 'WEBSITE' ? ('Pixel ' + _activeAcc) : (a.meta_subtype || '—'),
+                lookback: a.retention_days ? a.retention_days + ' hari' : '—',
+                size: '—',
+                status: (a.status || '').includes('Normal') ? 'ready' : 'process',
+                exclude: true,
+                created: ''
+            }));
+        } else {
+            _audiences[_activeAcc] = [];
+        }
+    } catch (e) {
+        _audiences[_activeAcc] = [];
+    }
+    renderTable();
+}
+
+async function loadPixels() {
+    try {
+        const r = await fetch(`/api/custom-audiences/pixels?acc=${_activeAcc}`);
+        const d = await r.json();
+        _pixels = (d.status === 'ok' && d.pixels) ? d.pixels : [];
+        const sel = document.getElementById('caPixel');
+        sel.innerHTML = '<option value="">— pilih pixel —</option>' + _pixels.map(p =>
+            `<option value="${escapeHtml(p.id)}">${escapeHtml(p.name)} (${escapeHtml(p.id)})</option>`).join('');
+        // prefill default pixel akun
+        const def = CA_ACCOUNTS[_activeAcc];
+        if (_pixels.length === 1) sel.value = _pixels[0].id;
+    } catch (e) {
+        _pixels = [];
+    }
+}
+
+let _videosLoading = false;
+async function loadVideos() {
+    _videosLoading = true;
+    try {
+        const r = await fetch(`/api/custom-audiences/videos?acc=${_activeAcc}`);
+        const d = await r.json();
+        _videos = (d.status === 'ok' && d.videos) ? d.videos : [];
+    } catch (e) {
+        _videos = [];
+    }
+    _videosLoading = false;
+    // kalau dropdown lagi kebuka, refresh otomatis
+    const dd = document.getElementById('caVideoDropdown');
+    if (dd && dd.style.display === 'block') filterVideos(document.getElementById('caVideoSearch').value);
+}
+
+// ===== VIDEO PICKER =====
+function renderVideoTags() {
+    const wrap = document.getElementById('caVideoTags');
+    wrap.innerHTML = Array.from(_selectedVideos.values()).map(v =>
+        `<span class="video-tag"><span>${escapeHtml(v.title)}</span><button onclick="removeVideo('${v.id}')" title="Hapus">✕</button></span>`).join('');
+}
+
+function openVideoDropdown() {
+    const dd = document.getElementById('caVideoDropdown');
+    if (dd) dd.style.display = 'block';
+    const list = document.getElementById('caVideoList');
+    if (_videosLoading) {
+        list.innerHTML = '<div class="video-empty">⏳ Memuat video…</div>';
+        return;
+    }
+    filterVideos(document.getElementById('caVideoSearch').value);
+}
+
+function closeVideoDropdown() {
+    const dd = document.getElementById('caVideoDropdown');
+    if (dd) dd.style.display = 'none';
+}
+
+function fmtNum(n) {
+    n = Number(n) || 0;
+    if (n >= 1000000) return (n/1000000).toFixed(1).replace(/\.0$/, '') + 'jt';
+    if (n >= 1000) return (n/1000).toFixed(1).replace(/\.0$/, '') + 'rb';
+    return String(n);
+}
+function fmtRp(n) {
+    n = Number(n) || 0;
+    if (n >= 1000000) return 'Rp' + (n/1000000).toFixed(1).replace(/\.0$/, '') + 'jt';
+    if (n >= 1000) return 'Rp' + (n/1000).toFixed(0) + 'rb';
+    return 'Rp' + n;
+}
+function fmtDate(iso) {
+    if (!iso) return '';
+    const p = iso.split('-');
+    if (p.length !== 3) return iso;
+    return p[2] + '/' + p[1] + '/' + p[0].slice(2);
+}
+
+function filterVideos(q) {
+    const list = document.getElementById('caVideoList');
+    const needle = (q || '').toLowerCase();
+    // sort: views desc (video tanpa data views di bawah)
+    let shown = _videos.filter(v => !needle || (v.title || '').toLowerCase().includes(needle));
+    shown = shown.slice().sort((a, b) => (Number(b.views) || 0) - (Number(a.views) || 0));
+    if (!shown.length) {
+        list.innerHTML = '<div class="video-empty">Tidak ada video ditemukan.</div>';
+        return;
+    }
+    list.innerHTML = shown.map(v => {
+        const sel = _selectedVideos.has(String(v.id));
+        const meta = (Number(v.views) > 0 || v.created)
+            ? `<div class="v-meta">${Number(v.views) > 0 ? fmtNum(v.views) + ' views · ' + fmtRp(v.spend) : ''}${v.created ? ' · terbit ' + fmtDate(v.created) : ''}</div>` : '';
+        return `<div class="video-opt ${sel ? 'selected' : ''}" onclick="toggleVideo('${v.id}')">
+            ${v.thumbnail ? `<img src="${escapeHtml(v.thumbnail)}" loading="lazy">` : '<img style="background:var(--border)">'}
+            <div style="flex:1;min-width:0">
+                <div class="v-title">${escapeHtml(v.title)}</div>
+                ${meta}
+            </div>
+            ${sel ? '<span class="v-check">✓</span>' : ''}
+        </div>`;
+    }).join('');
+}
+
+function toggleVideo(id) {
+    const key = String(id);
+    if (_selectedVideos.has(key)) {
+        _selectedVideos.delete(key);
+    } else {
+        const v = _videos.find(x => String(x.id) === key);
+        if (v) _selectedVideos.set(key, {id: key, title: v.title, thumbnail: v.thumbnail});
+    }
+    renderVideoTags();
+    filterVideos(document.getElementById('caVideoSearch').value);
+}
+
+function removeVideo(id) {
+    _selectedVideos.delete(String(id));
+    renderVideoTags();
+    filterVideos(document.getElementById('caVideoSearch').value);
+}
+
+document.addEventListener('click', (e) => {
+    const dd = document.getElementById('caVideoDropdown');
+    const box = document.getElementById('caVideoSelect');
+    if (dd && !dd.contains(e.target) && box && !box.contains(e.target)) closeVideoDropdown();
+});
+
+// ===== ACCOUNT =====
+function selectAcc(el) {
+    document.querySelectorAll('.acc-card').forEach(c => c.classList.remove('selected'));
+    el.classList.add('selected');
+    _activeAcc = el.dataset.acc;
+    document.getElementById('accLabel').textContent = _activeAcc;
+    loadAudiences();
+}
+
+// ===== TABLE =====
+function renderTable() {
+    const filter = document.getElementById('typeFilter').value;
+    let rows = _audiences[_activeAcc] || [];
+    if (filter !== 'all') rows = rows.filter(r => r.type === filter);
+
+    const body = document.getElementById('caTableBody');
+    const empty = document.getElementById('caEmpty');
+    if (!rows.length) {
+        body.innerHTML = '';
+        empty.style.display = 'block';
+        return;
+    }
+    empty.style.display = 'none';
+    body.innerHTML = rows.map(r => `
+        <tr>
+            <td style="font-weight:600">${escapeHtml(r.name)}</td>
+            <td><span class="badge ${r.type === 'lookalike' ? 'badge-lookalike' : 'badge-custom'}">${r.type === 'lookalike' ? '✨ Lookalike' : '👥 Custom'}</span></td>
+            <td><span class="badge badge-src">${sourceLabel(r.source)}</span></td>
+            <td style="color:var(--text-muted);font-size:0.72rem">${escapeHtml(r.pixel)}</td>
+            <td>${r.lookback}</td>
+            <td style="font-weight:600">${escapeHtml(r.size)}</td>
+            <td>${r.status === 'ready' ? '<span class="badge badge-ok">● Siap</span>' : '<span class="badge badge-warn">⏳ Proses</span>'}</td>
+            <td>${r.exclude ? '<span class="exclude-tag">✔ Leads/ATC</span>' : '<span style="color:var(--text-muted);font-size:0.7rem">—</span>'}</td>
+            <td style="color:var(--text-muted);font-size:0.72rem">${r.created}</td>
+            <td style="white-space:nowrap">
+                <button class="btn btn-mini" onclick="editAudience('${r.meta_id}')">✏️</button>
+                <button class="btn btn-mini" style="border-color:var(--danger);color:var(--danger)" onclick="deleteAudience('${r.meta_id}')">🗑</button>
+            </td>
+        </tr>`).join('');
+}
+
+function sourceLabel(src) {
+    if (src === 'pixel') return '📊 Pixel';
+    if (src === 'csv') return '📄 CSV';
+    if (src === 'both') return '📊+📄 Pixel & CSV';
+    return '✨ Lookalike';
+}
+
+// ===== MODAL =====
+function openModal() {
+    _editingMetaId = null;
+    document.getElementById('caModalTitle').textContent = '＋ Buat Custom Audience';
+    document.getElementById('caModalSub').textContent = 'Custom Audience dari pixel / CSV. Lookalike dari seed custom audience.';
+    document.getElementById('caName').value = '';
+    _selectedVideos.clear();
+    renderVideoTags();
+    document.getElementById('caVideoSearch').value = '';
+    setType('custom');
+    setSource('pixel');
+    loadPixels();
+    loadVideos();
+    // isi dropdown seed lookalike dari custom audience akun aktif
+    const seedSel = document.getElementById('lalSource');
+    const cus = (_audiences[_activeAcc] || []).filter(a => a.type === 'custom');
+    seedSel.innerHTML = '<option value="">— pilih custom audience seed —</option>' + cus.map(a =>
+        `<option value="${escapeHtml(a.meta_id)}">${escapeHtml(a.name)}</option>`).join('');
+    document.getElementById('caModal').classList.add('active');
+}
+
+function closeModal() {
+    document.getElementById('caModal').classList.remove('active');
+}
+
+function setType(t) {
+    _modalType = t;
+    document.querySelectorAll('#typeChips .type-chip').forEach(c => c.classList.toggle('active', c.dataset.type === t));
+    document.getElementById('customFields').style.display = t === 'custom' ? 'block' : 'none';
+    document.getElementById('lookalikeFields').style.display = t === 'lookalike' ? 'block' : 'none';
+}
+
+function setSource(s) {
+    _modalSrc = s;
+    document.querySelectorAll('#srcChips .src-chip').forEach(c => c.classList.toggle('active', c.dataset.src === s));
+    document.getElementById('pixelFields').style.display = (s === 'pixel' || s === 'both') ? 'flex' : 'none';
+    document.getElementById('videoViewsField').style.display = (s === 'pixel' || s === 'both') ? 'block' : 'none';
+    document.getElementById('csvFields').style.display = (s === 'csv' || s === 'both') ? 'block' : 'none';
+}
+
+function toggleExcl(row, id) {
+    const sw = document.getElementById(id);
+    sw.classList.toggle('on');
+}
+
+// ===== CSV =====
+function handleCsvPick(input) {
+    if (input.files && input.files[0]) showCsvFile(input.files[0]);
+}
+function handleCsvDrop(e) {
+    e.preventDefault();
+    const dz = document.getElementById('csvDrop');
+    dz.classList.remove('over');
+    if (e.dataTransfer.files && e.dataTransfer.files[0]) showCsvFile(e.dataTransfer.files[0]);
+}
+function showCsvFile(f) {
+    const info = document.getElementById('csvFileInfo');
+    info.style.display = 'flex';
+    info.innerHTML = '📎 ' + escapeHtml(f.name) + ' (' + (f.size/1024).toFixed(0) + ' KB)';
+}
+
+// ===== CRUD =====
+async function saveAudience() {
+    const name = document.getElementById('caName').value.trim();
+    if (!name) { alert('Nama audience wajib diisi'); return; }
+    const lookback = parseInt(document.getElementById('caLookback').value || 90);
+    const exclude = document.getElementById('caExclude').classList.contains('on');
+    const video_views = document.getElementById('caVideoViews').classList.contains('on');
+    const btn = document.querySelector('#caModal .btn-primary');
+    if (btn) btn.disabled = true;
+
+    // MODE EDIT → rename
+    if (_editingMetaId) {
+        const r = await fetch('/api/custom-audiences/rename', {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({ meta_id: _editingMetaId, name: name })
+        });
+        const d = await r.json();
+        if (btn) btn.disabled = false;
+        if (d.status !== 'ok') { alert('Gagal rename: ' + (d.message || 'error')); return; }
+        closeModal();
+        loadAudiences();
+        return;
+    }
+
+    // MODE CREATE
+    const fileInput = document.getElementById('csvInput');
+    const hasFile = fileInput && fileInput.files && fileInput.files[0];
+    if ((_modalSrc === 'csv' || _modalSrc === 'both') && !hasFile) {
+        if (btn) btn.disabled = false;
+        alert('Upload file CSV dulu (sumber CSV / Pixel & CSV)');
+        return;
+    }
+
+    let d;
+    if (_modalSrc === 'csv' || _modalSrc === 'both') {
+        const fd = new FormData();
+        fd.append('account_key', _activeAcc);
+        fd.append('name', name);
+        fd.append('lookback_days', lookback);
+        fd.append('exclude_leads_atc', exclude ? '1' : '0');
+        fd.append('file', fileInput.files[0]);
+        const r = await fetch('/api/custom-audiences/csv', { method: 'POST', body: fd });
+        d = await r.json();
+    } else {
+        const payload = {
+            account_key: _activeAcc,
+            name: name,
+            type: _modalType,
+            source: _modalSrc,
+            pixel_id: document.getElementById('caPixel').value,
+            lookback_days: lookback,
+            video_views: video_views,
+            video_ids: Array.from(_selectedVideos.keys()),
+            exclude_leads_atc: exclude,
+            lookalike_ratio: parseInt(document.getElementById('lalSize').value || 5),
+            lookalike_country: document.getElementById('lalCountry').value || 'ID',
+            seed_meta_id: document.getElementById('lalSource').value
+        };
+        const r = await fetch('/api/custom-audiences', {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify(payload)
+        });
+        d = await r.json();
+    }
+    if (btn) btn.disabled = false;
+    if (d.status !== 'ok') {
+        alert('Gagal buat audience: ' + (d.message || 'error'));
+        return;
+    }
+    alert('✅ Audience berhasil dibuat di Meta!');
+    closeModal();
+    loadAudiences();
+}
+
+function editAudience(metaId) {
+    const rows = _audiences[_activeAcc] || [];
+    const r = rows.find(x => String(x.meta_id) === String(metaId));
+    if (!r) return;
+    _editingMetaId = metaId;
+    document.getElementById('caModalTitle').textContent = '✏️ Edit Audience';
+    document.getElementById('caModalSub').textContent = 'Ubah nama audience (Meta + lokal).';
+    document.getElementById('caName').value = r.name;
+    setType(r.type === 'lookalike' ? 'lookalike' : 'custom');
+    if (r.type !== 'lookalike') setSource(r.source === 'csv' ? 'csv' : (r.source === 'both' ? 'both' : 'pixel'));
+    document.getElementById('caModal').classList.add('active');
+}
+
+async function deleteAudience(metaId) {
+    if (!confirm('Hapus audience ini dari Meta? Ini tidak bisa dibatalkan.')) return;
+    const r = await fetch('/api/custom-audiences/delete-meta', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({ meta_id: metaId })
+    });
+    const d = await r.json();
+    if (d.status !== 'ok') { alert('Gagal hapus: ' + (d.message || 'error')); return; }
+    alert('🗑 Audience terhapus');
+    loadAudiences();
+}
+
+function escapeHtml(s) {
+    return String(s ?? '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;');
+}
+
+// ===== SIDEBAR / THEME (sama kayak halaman lain) =====
+function toggleTheme() {
+    const html = document.documentElement;
+    const cur = html.getAttribute('data-theme');
+    const next = cur === 'dark' ? 'light' : 'dark';
+    html.setAttribute('data-theme', next);
+    localStorage.setItem('rg-theme', next);
+}
+function toggleSidebar() {
+    const sidebar = document.getElementById('sidebar');
+    const main = document.getElementById('mainContent');
+    const backdrop = document.getElementById('sidebarBackdrop');
+    if (window.innerWidth <= 768) {
+        sidebar.classList.toggle('open');
+        if (backdrop) backdrop.classList.toggle('active');
+    } else {
+        sidebar.classList.toggle('collapsed');
+        main.classList.toggle('expanded');
+    }
+    localStorage.setItem('rg-sidebar', sidebar.classList.contains('collapsed') ? '1' : '0');
+}
+if (typeof window.toggleSubmenu !== 'function') {
+    window.toggleSubmenu = function(e, id) {
+        e.preventDefault();
+        const el = document.getElementById(id);
+        if (!el) return;
+        const open = el.classList.contains('open');
+        el.classList.toggle('open', !open);
+        const arrow = e.currentTarget.querySelector('.nav-arrow');
+        if (arrow) arrow.classList.toggle('open', !open);
+    };
+}
+function logout() { window.location.href = '/logout'; }
+(function init() {
+    if (localStorage.getItem('rg-sidebar') === '1') {
+        document.getElementById('sidebar').classList.add('collapsed');
+        document.getElementById('mainContent').classList.add('expanded');
+    }
+    document.getElementById('currentDate').textContent = new Date().toLocaleDateString('id-ID', { weekday:'short', year:'numeric', month:'short', day:'numeric' });
+    loadAudiences();
+    loadPixels();
+})();
+</script>
+</body>
+</html>

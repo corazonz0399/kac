@@ -1,0 +1,1061 @@
+<!DOCTYPE html>
+<html lang="id" data-theme="dark">
+<head>
+<link rel="icon" type="image/png" href="/static/favicon.png">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Post Fanpage | Kowalski Ads Center</title>
+<script>!function(){var t=localStorage.getItem('rg-theme')||'dark';document.documentElement.setAttribute('data-theme',t)}()</script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/static/style.css?v=3">
+<style>
+:root {
+    --bg: #0a0a0f;
+    --bg-card: #12121a;
+    --bg-card-hover: #1a1a2e;
+    --accent: #6c5ce7;
+    --accent-light: #a29bfe;
+    --accent-gradient: linear-gradient(135deg, #6c5ce7, #fd79a8);
+    --text: #e4e4e7;
+    --text-muted: #888899;
+    --border: #1e1e30;
+    --success: #00b894;
+    --warning: #fdcb6e;
+    --danger: #ff6b6b;
+}
+[data-theme="light"] {
+    --bg: #f8f9fc;
+    --bg-card: #ffffff;
+    --bg-card-hover: #f0f2f8;
+    --text: #1a1a2e;
+    --text-muted: #6b7280;
+    --border: #e5e7eb;
+    --success: #059669;
+    --warning: #d97706;
+    --danger: #dc2626;
+}
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body {
+    font-family: 'Inter', -apple-system, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.6;
+}
+/* Topbar */
+.topbar {
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    z-index: 100;
+    background: rgba(10,10,15,0.85);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border-bottom: 1px solid var(--border);
+    padding: 0 20px;
+    height: 52px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+[data-theme="light"] .topbar { background: rgba(255,255,255,0.85); }
+.topbar-left { display: flex; align-items: center; gap: 12px; }
+.topbar-left .logo { font-weight: 800; font-size: 1rem; }
+.topbar-right { display: flex; align-items: center; gap: 10px; }
+.theme-toggle {
+    background: none; border: 1px solid var(--border);
+    border-radius: 8px; padding: 4px 10px;
+    cursor: pointer; font-size: 1rem;
+    color: var(--text-muted);
+    transition: all 0.2s;
+}
+.theme-toggle:hover { border-color: var(--accent); color: var(--text); }
+.topbar-date { font-size: 0.75rem; color: var(--text-muted); }
+.sidebar-toggle {
+    background: none; border: 1px solid var(--border);
+    border-radius: 8px; padding: 4px 8px;
+    cursor: pointer; font-size: 1rem;
+    color: var(--text-muted);
+    transition: all 0.2s;
+}
+.sidebar-toggle:hover { border-color: var(--accent); color: var(--text); }
+.topbar-inner { width:100%; display:flex; align-items:center; justify-content:space-between; gap:12px; }
+
+/* Main */
+.main {
+    margin-top: 52px;
+    margin-left: 220px;
+    padding: 20px;
+    transition: margin-left 0.25s ease;
+}
+.main.expanded { margin-left: 0; }
+
+/* Sidebar */
+.sidebar {
+    position: fixed;
+    top: 52px; left: 0; bottom: 0;
+    width: 220px;
+    background: var(--bg-card);
+    border-right: 1px solid var(--border);
+    display: flex;
+    flex-direction: column;
+    z-index: 90;
+    transition: width 0.25s ease;
+}
+.sidebar.collapsed { width: 0; overflow: hidden; border-right: none; }
+.sidebar-brand {
+    display: flex; align-items: center; gap: 10px;
+    padding: 14px 16px;
+    border-bottom: 1px solid var(--border);
+}
+.brand-name { font-size: 0.8rem; font-weight: 800; }
+.brand-sub { font-size: 0.6rem; color: var(--text-muted); }
+.sidebar-nav { flex: 1; overflow-y: auto; padding: 8px 0; }
+.nav-section {
+    font-size: 0.58rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: var(--text-muted);
+    padding: 12px 16px 4px;
+}
+.nav-item {
+    display: flex; align-items: center; gap: 10px;
+    padding: 8px 16px;
+    color: var(--text);
+    text-decoration: none;
+    font-size: 0.75rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.15s;
+}
+.nav-item:hover { background: var(--bg-card-hover); color: var(--accent-light); }
+.nav-item svg { flex-shrink: 0; }
+.nav-arrow { margin-left: auto; transition: transform 0.2s; }
+.nav-arrow.open { transform: rotate(90deg); }
+.nav-subs { display: none; }
+.nav-subs.open { display: block; }
+.nav-sub {
+    display: flex; align-items: center; gap: 10px;
+    padding: 7px 16px 7px 40px;
+    color: var(--text-muted);
+    text-decoration: none;
+    font-size: 0.7rem;
+    font-weight: 500;
+    transition: all 0.15s;
+}
+.nav-sub:hover { color: var(--accent-light); background: var(--bg-card-hover); }
+.nav-sub.active { color: var(--accent-light); background: rgba(108,92,231,0.1); }
+.sidebar-user {
+    display: flex; align-items: center; gap: 10px;
+    padding: 12px 16px;
+    border-top: 1px solid var(--border);
+}
+.user-avatar {
+    width: 32px; height: 32px; border-radius: 50%;
+    background: var(--accent-gradient);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 0.7rem; font-weight: 800; color: #fff;
+}
+.user-name { font-size: 0.72rem; font-weight: 700; }
+.user-role { font-size: 0.6rem; color: var(--text-muted); }
+.btn-logout { background: none; border: none; color: var(--text-muted); cursor: pointer; padding: 4px; }
+.btn-logout:hover { color: var(--danger); }
+
+/* Sidebar Backdrop (mobile) */
+.sidebar-backdrop { display: none; position: fixed; inset: 0; z-index: 55; background: rgba(0,0,0,0.4); opacity: 0; transition: opacity 0.25s ease; }
+@media (max-width: 768px) {
+    .sidebar-backdrop.show { display: block; opacity: 1; }
+}
+
+/* Badge */
+.badge { display:inline-block; font-size:0.62rem; font-weight:700; padding:2px 8px; border-radius:6px; }
+
+/* Buttons */
+.btn {
+    font-family: inherit;
+    font-size: 0.75rem;
+    font-weight: 600;
+    padding: 6px 12px;
+    border-radius: 8px;
+    border: 1px solid var(--border);
+    background: var(--bg-card);
+    color: var(--text);
+    cursor: pointer;
+    transition: all 0.2s;
+    white-space: nowrap;
+}
+.btn:hover { border-color: var(--accent); background: var(--bg-card-hover); }
+.btn-primary { background: var(--accent); border-color: var(--accent); color: #fff; }
+.btn-primary:hover { background: #5a4bd1; border-color: #5a4bd1; }
+.btn:disabled { opacity: 0.5; cursor: not-allowed; }
+.btn-danger { background: var(--danger); border-color: var(--danger); color: #fff; }
+
+/* Page header */
+.pp-wrap { max-width: none; width: 100%; }
+.pp-header { display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:16px; flex-wrap:wrap; gap:10px; }
+.pp-header h1 { font-size:1.2rem; font-weight:800; display:flex; align-items:center; gap:8px; }
+.pp-desc { font-size:0.8rem; color:var(--text-muted); margin-top:4px; }
+
+/* Wizard steps */
+.wizard { display:flex; align-items:center; gap:10px; margin-bottom:18px; flex-wrap:wrap; }
+.wstep { display:flex; align-items:center; gap:8px; padding:8px 14px; border-radius:10px; border:1px solid var(--border); background:var(--bg-card); font-size:0.72rem; font-weight:700; color:var(--text-muted); transition:all 0.2s; }
+.wstep .wnum { width:20px; height:20px; border-radius:50%; background:var(--border); color:var(--text-muted); display:flex; align-items:center; justify-content:center; font-size:0.65rem; font-weight:800; }
+.wstep.active { border-color:var(--accent); color:var(--text); background:rgba(108,92,231,0.08); }
+.wstep.active .wnum { background:var(--accent); color:#fff; }
+.wstep.done { border-color:var(--success); color:var(--success); }
+.wstep.done .wnum { background:var(--success); color:#fff; }
+.warrow { color:var(--text-muted); font-size:0.8rem; }
+
+/* Card */
+.card { background: var(--bg-card); border: 1px solid var(--border); border-radius: 16px; padding: 20px; transition: all 0.3s; margin-bottom: 16px; }
+.card h3 { font-size: 0.85rem; font-weight: 600; color: var(--text-muted); margin-bottom: 12px; }
+
+/* Page grid (step 1) */
+.acc-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(230px,1fr)); gap:10px; }
+.acc-card { background:var(--bg-card); border:1px solid var(--border); border-radius:12px; padding:12px 14px; cursor:pointer; transition:all 0.2s; position:relative; }
+.acc-card:hover { border-color:var(--accent); }
+.acc-card.selected { border-color:var(--accent); background:rgba(108,92,231,0.08); }
+.acc-card .acc-name { font-size:0.82rem; font-weight:700; }
+.acc-card .acc-info { font-size:0.68rem; color:var(--text-muted); font-family:monospace; margin-top:2px; }
+.acc-card .acc-check { position:absolute; top:10px; right:12px; color:var(--accent-light); font-size:0.9rem; display:none; }
+.acc-card.selected .acc-check { display:block; }
+
+/* Konten toolbar (step 2) */
+.ktoolbar { display:flex; gap:10px; margin-bottom:12px; flex-wrap:wrap; align-items:center; }
+.ktoolbar input[type=text] {
+    flex:1; min-width:180px; padding:8px 12px; border-radius:8px; border:1px solid var(--border);
+    background:var(--bg); color:var(--text); font-size:0.78rem; font-family:'Inter',sans-serif; outline:none;
+}
+.ktoolbar input:focus { border-color:var(--accent); }
+.ktoolbar select {
+    padding:8px 12px; border-radius:8px; border:1px solid var(--border);
+    background:var(--bg); color:var(--text); font-size:0.75rem; font-family:'Inter',sans-serif; outline:none; cursor:pointer;
+}
+.kcount { font-size:0.7rem; color:var(--text-muted); }
+
+/* Konten grid */
+.konten-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(170px,1fr)); gap:10px; }
+.kcard { background:var(--bg-card); border:1px solid var(--border); border-radius:12px; overflow:hidden; cursor:pointer; transition:all 0.2s; position:relative; }
+.kcard:hover { border-color:var(--accent); transform:translateY(-1px); }
+.kcard.selected { border-color:var(--accent); background:rgba(108,92,231,0.08); }
+.kcard .kthumb { width:100%; aspect-ratio:16/9; object-fit:cover; background:var(--border); display:block; }
+.kcard .kbadge { position:absolute; top:8px; left:8px; font-size:0.58rem; font-weight:700; padding:2px 8px; border-radius:6px; }
+.kbadge.video { background:rgba(108,92,231,0.9); color:#fff; }
+.kbadge.image { background:rgba(0,184,148,0.9); color:#fff; }
+.kcard .kname { font-size:0.68rem; font-weight:600; padding:8px 10px 4px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+.kcard .kmeta { font-size:0.6rem; color:var(--text-muted); padding:0 10px 8px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+.kcard .kcheck { position:absolute; top:8px; right:8px; background:var(--accent); color:#fff; width:20px; height:20px; border-radius:50%; display:none; align-items:center; justify-content:center; font-size:0.7rem; font-weight:800; }
+.kcard.selected .kcheck { display:flex; }
+.kcard .kplay {
+    position:absolute; top:50%; left:50%; transform:translate(-50%,-50%);
+    width:38px; height:38px; border-radius:50%;
+    background:rgba(10,10,15,0.7); border:2px solid rgba(255,255,255,0.85);
+    color:#fff; display:flex; align-items:center; justify-content:center;
+    font-size:0.9rem; cursor:pointer; opacity:0; transition:opacity 0.2s;
+    pointer-events:auto; z-index:3;
+}
+.kcard:hover .kplay { opacity:1; }
+.kcard .kplay:hover { background:var(--accent); border-color:var(--accent); }
+
+/* Video player modal (Google Drive) */
+.vmodal-overlay { display:none; position:fixed; inset:0; background:rgba(0,0,0,0.85); z-index:300; align-items:center; justify-content:center; padding:20px; }
+.vmodal-overlay.active { display:flex; }
+.vmodal { background:var(--bg-card); border:1px solid var(--border); border-radius:16px; max-width:760px; width:100%; overflow:hidden; box-shadow:0 20px 60px rgba(0,0,0,0.5); }
+.vmodal-head { display:flex; align-items:center; justify-content:space-between; padding:12px 16px; border-bottom:1px solid var(--border); gap:10px; }
+.vmodal-head .vtitle { font-size:0.8rem; font-weight:700; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+.vmodal-close { background:none; border:none; color:var(--text-muted); font-size:1.2rem; cursor:pointer; padding:2px 6px; border-radius:6px; flex-shrink:0; }
+.vmodal-close:hover { color:var(--danger); background:rgba(255,107,107,0.1); }
+.vmodal-body { background:#000; aspect-ratio:16/9; display:flex; align-items:center; justify-content:center; position:relative; }
+.vmodal-body video { width:100%; height:100%; object-fit:contain; }
+.vmodal-loading { color:var(--text-muted); font-size:0.8rem; }
+.vmodal-openlink { padding:10px 16px; font-size:0.68rem; color:var(--text-muted); border-top:1px solid var(--border); display:flex; justify-content:space-between; align-items:center; gap:8px; flex-wrap:wrap; }
+.vmodal-openlink a { color:var(--accent-light); }
+.kempty { text-align:center; padding:40px 0; color:var(--text-muted); font-size:0.8rem; grid-column:1/-1; }
+
+/* Form (step 3) */
+.form-group { margin-bottom:14px; }
+.form-group label { display:block; font-size:0.7rem; font-weight:700; margin-bottom:6px; color:var(--text); }
+.form-group label .req { color:var(--danger); }
+.form-group input[type=text], .form-group textarea {
+    width:100%; padding:9px 12px; border-radius:8px; border:1px solid var(--border);
+    background:var(--bg); color:var(--text); font-size:0.8rem; font-family:'Inter',sans-serif; outline:none;
+}
+.form-group input:focus, .form-group textarea:focus { border-color:var(--accent); }
+.form-group textarea { min-height:110px; resize:vertical; }
+.char-count { font-size:0.62rem; color:var(--text-muted); text-align:right; margin-top:4px; }
+/* Format font — teks biasa (input/textarea), tanpa toolbar */
+
+/* Preview post */
+.pp-preview { display:flex; gap:16px; flex-wrap:wrap; margin-top:4px; }
+.pp-preview .prev-col { flex:1; min-width:260px; }
+.preview-card { background:var(--bg); border:1px solid var(--border); border-radius:12px; padding:14px; }
+.preview-head { display:flex; align-items:center; gap:10px; margin-bottom:10px; }
+.preview-avatar { width:38px; height:38px; border-radius:50%; background:var(--accent-gradient); display:flex; align-items:center; justify-content:center; font-weight:800; font-size:0.75rem; color:#fff; flex-shrink:0; }
+.preview-page { font-size:0.78rem; font-weight:700; }
+.preview-time { font-size:0.62rem; color:var(--text-muted); }
+.preview-text { font-size:0.78rem; margin-bottom:10px; white-space:pre-wrap; word-break:break-word; }
+/* Format font — teks biasa (input/textarea), tanpa toolbar */
+#postTitle, #postCaption {
+    font-family: inherit;
+}
+.preview-media { width:100%; border-radius:10px; display:block; }
+.preview-media-box { position:relative; }
+.preview-play { position:absolute; top:50%; left:50%; transform:translate(-50%,-50%); font-size:2rem; opacity:0.85; }
+.preview-title { font-size:0.7rem; font-weight:700; padding:10px 12px; }
+
+/* Summary chips */
+.sel-chips { display:flex; flex-wrap:wrap; gap:8px; margin-bottom:14px; }
+.sel-chip { display:inline-flex; align-items:center; gap:6px; background:rgba(108,92,231,0.12); border:1px solid rgba(108,92,231,0.35); color:var(--accent-light); border-radius:8px; padding:5px 10px; font-size:0.68rem; }
+.sel-chip .scl { color:var(--text-muted); font-weight:600; }
+.sel-chip .scv { font-weight:700; max-width:220px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+
+/* History table */
+.table-wrap { overflow-x:auto; }
+.table { width:100%; border-collapse:collapse; font-size:0.75rem; }
+.table th { text-align:left; padding:9px 10px; color:var(--text-muted); font-weight:600; font-size:0.66rem; text-transform:uppercase; letter-spacing:0.4px; border-bottom:1px solid var(--border); white-space:nowrap; }
+.table td { padding:9px 10px; border-bottom:1px solid var(--border); vertical-align:middle; }
+.table tr:hover td { background:var(--bg-card-hover); }
+.hstatus { display:inline-block; font-size:0.6rem; font-weight:700; padding:2px 8px; border-radius:6px; }
+.hstatus.published { background:rgba(0,184,148,0.15); color:#00b894; }
+.hstatus.failed { background:rgba(255,107,107,0.15); color:#ff6b6b; }
+.hstatus.pending { background:rgba(253,203,110,0.15); color:#fdcb6e; }
+.pg-btn { background:var(--bg-card); border:1px solid var(--border); color:var(--text); font-size:0.7rem; font-weight:600; padding:5px 12px; border-radius:8px; cursor:pointer; transition:all .15s; }
+.pg-btn:hover:not(:disabled) { border-color:var(--accent); color:var(--accent); }
+.pg-btn.active { background:var(--accent); border-color:var(--accent); color:#fff; }
+.pg-btn:disabled { opacity:.4; cursor:not-allowed; }
+.pg-dots { color:var(--text-muted); font-size:0.7rem; padding:0 2px; }
+.pg-info { font-size:0.65rem; color:var(--text-muted); margin-left:8px; }
+
+/* Modal */
+.modal-overlay { display:none; position:fixed; inset:0; background:rgba(0,0,0,0.6); z-index:200; align-items:flex-start; justify-content:center; padding:40px 16px; overflow-y:auto; }
+.modal-overlay.active { display:flex; }
+.modal { background:var(--bg-card); border:1px solid var(--border); border-radius:16px; max-width:480px; width:100%; padding:20px; box-shadow:0 20px 60px rgba(0,0,0,0.4); }
+.modal h3 { font-size:1rem; font-weight:800; margin-bottom:6px; }
+.modal-sub { font-size:0.72rem; color:var(--text-muted); margin-bottom:14px; }
+.modal-warn { background:rgba(255,107,107,0.1); border:1px solid rgba(255,107,107,0.3); border-radius:10px; padding:10px 12px; font-size:0.7rem; color:var(--danger); margin-bottom:14px; }
+.modal-actions { display:flex; justify-content:flex-end; gap:8px; margin-top:16px; }
+
+/* Toast */
+.toast { position:fixed; bottom:20px; left:50%; transform:translateX(-50%); padding:10px 20px; border-radius:10px; font-size:0.8rem; font-weight:600; background:var(--bg-card); border:1px solid var(--border); color:var(--text); z-index:9999; opacity:0; transition:all 0.3s; pointer-events:none; max-width:90vw; }
+.toast.toast-success { opacity:1; border-color:var(--success); color:var(--success); }
+.toast.toast-error { opacity:1; border-color:var(--danger); color:var(--danger); }
+.toast.toast-info { opacity:1; border-color:var(--accent); color:var(--accent-light); }
+
+/* Skeleton */
+.skeleton { background:linear-gradient(90deg, var(--bg-card) 25%, var(--bg-card-hover) 50%, var(--bg-card) 75%); background-size:200% 100%; animation:shimmer 1.5s infinite; border-radius:8px; }
+@keyframes shimmer { 0% { background-position:200% 0; } 100% { background-position:-200% 0; } }
+
+/* Mobile */
+@media (max-width: 768px) {
+    .sidebar { width: 240px !important; transform: translateX(-100%); transition: transform 0.25s ease; border-right: 1px solid var(--border); z-index: 60; box-shadow: 4px 0 20px rgba(0,0,0,0.3); }
+    .sidebar.collapsed { transform: translateX(-100%) !important; width: 240px !important; border-right: 1px solid var(--border) !important; overflow: visible; }
+    .sidebar.open { transform: translateX(0); }
+    .main { margin-left: 0 !important; padding: 16px; }
+    .pp-header { flex-direction: column; }
+    .pp-header h1 { font-size: 1.1rem; }
+    .acc-grid { grid-template-columns: repeat(2, 1fr); gap: 8px; }
+    .konten-grid { grid-template-columns: repeat(2, 1fr); gap: 8px; }
+    .wstep { font-size: 0.62rem; padding: 6px 10px; }
+    .topbar-date { display: none; }
+}
+@media (max-width: 480px) {
+    .sidebar { width: 100% !important; }
+    .acc-grid, .konten-grid { grid-template-columns: 1fr 1fr; gap: 6px; }
+}
+</style>
+</head>
+<body>
+
+<!-- TOPBAR -->
+<header class="topbar">
+    <div class="topbar-inner">
+        <div class="topbar-left">
+            <button class="sidebar-toggle" id="sidebarToggle" onclick="toggleSidebar()">☰</button>
+            <img src="/static/kowalski-logo.png" alt="KS" style="height:26px;width:auto;object-fit:contain;border-radius:6px"> <span class="logo">Kowalski Ads Center</span>
+            <span class="badge" style="margin-left:8px;font-size:0.6rem;padding:2px 8px;background:linear-gradient(135deg,#6c5ce7,#fd79a8);color:#fff;border-radius:4px">Alpha Testing</span>
+        </div>
+        <div class="topbar-right">
+            <button class="theme-toggle" onclick="toggleTheme()" title="Ganti tema"><i class="bi bi-circle-half" aria-hidden="true"></i></button>
+            <span class="topbar-date" id="currentDate"></span>
+        </div>
+    </div>
+</header>
+
+<div id="sidebarBackdrop" class="sidebar-backdrop" onclick="toggleSidebar()"></div>
+
+<!-- SIDEBAR -->
+<aside class="sidebar collapsed" id="sidebar">
+    <div class="sidebar-brand">
+        <img src="/static/kowalski-logo.png" alt="KS" class="brand-logo-img" style="width:30px;height:30px;object-fit:contain;border-radius:8px">
+        <div>
+            <div class="brand-name">Kowalski Ads Center</div>
+            <div class="brand-sub">Meta Ads Report</div>
+        </div>
+    </div>
+    <nav class="sidebar-nav">
+                <a class="nav-item {{ 'active' if group=='generos' or group=='genmilk' else '' }}" href="#" onclick="toggleSubmenu(event, 'dashSubs')">
+            <span><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg></span> <span>Dashboard</span>
+            <span class="nav-arrow {{ 'open' if group=='generos' or group=='genmilk' else '' }}"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg></span>
+        </a>
+        <div class="nav-subs {{ 'open' if group=='generos' or group=='genmilk' else '' }}" id="dashSubs">
+            <a href="/dashboard" class="nav-sub {{ 'active' if group=='generos' else '' }}"><span><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg></span> <span>Generos</span></a>
+            <a href="/dashboard/genmilk" class="nav-sub {{ 'active' if group=='genmilk' else '' }}"><span><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2.69l5.66 5.66a8 8 0 1 1-11.31 0z"/></svg></span> <span>GenMilk</span></a>
+        </div>
+
+        <div class="nav-section">Analisis</div>
+        <a class="nav-item" href="#" onclick="toggleSubmenu(event, 'analisisSubs')">
+            <span><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg></span> <span>Analisis</span>
+            <span class="nav-arrow "><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg></span>
+        </a>
+        <div class="nav-subs " id="analisisSubs">
+            <a href="/analisis/kampanye" class="nav-sub "><span><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg></span> <span>Kampanye</span></a>
+            <a href="/analisis/adset" class="nav-sub "><span><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg></span> <span>Adset</span></a>
+            <a href="/analisis/iklan" class="nav-sub "><span><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z"/></svg></span> <span>Iklan</span></a>
+        </div>
+
+        <div class="nav-section admin-only">Creator</div>
+        <a class="nav-item admin-only" href="#" onclick="toggleSubmenu(event, 'creatorSubs')">
+            <span><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="3" width="20" height="18" rx="3" ry="3"/><polygon points="10 8 16 12 10 16 10 8"/></svg></span> <span>Creator</span>
+            <span class="nav-arrow "><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg></span>
+        </a>
+        <div class="nav-subs " id="creatorSubs">
+            <a href="/vo-generator" class="nav-sub admin-only "><span><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" y1="19" x2="12" y2="22"/></svg></span> <span>Generator VO</span></a>
+            <a href="/storyboard" class="nav-sub admin-only "><span><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z"/></svg></span> <span>Storyboard</span></a>
+            <a href="/copywriting-generator" class="nav-sub admin-only "><span><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg></span> <span>Copywriting</span></a>
+            <a href="/adset-generator" class="nav-sub admin-only "><span><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg></span> <span>Adset</span></a>
+        </div>
+
+        <div class="nav-section admin-only">Tools</div>
+        <a class="nav-item admin-only" href="#" onclick="toggleSubmenu(event, 'toolsSubs')">
+            <span><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg></span> <span>Tools</span>
+            <span class="nav-arrow open"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg></span>
+        </a>
+        <div class="nav-subs open" id="toolsSubs">
+            <a href="/dev/campaign-studio" class="nav-sub admin-only "><span><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4.5 16.5c-1.5 1.26-2 5-2 5s3.74-.5 5-2c.71-.84.7-2.13-.06-2.91a2.2 2.2 0 0 0-2.94-.09z"/><path d="M12 15l-3-3a22 22 0 0 1 2-3.95A12.88 12.88 0 0 1 22 2c0 2.72-.78 7.5-6 11a22.35 22.35 0 0 1-4 2z"/><path d="M9 12H4s.55-3.03 2-4c1.62-1.08 5 0 5 0"/><path d="M12 15v5s3.03-.55 4-2c1.08-1.62 0-5 0-5"/></svg></span> <span>Campaign Studio <span class="badge" style="margin-left:4px;font-size:0.55rem;padding:1px 6px;background:linear-gradient(135deg,#6c5ce7,#fd79a8);color:#fff;border-radius:4px">Final Testing</span></span></a>
+            <a href="/produk" class="nav-sub admin-only "><span><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.83z"/><line x1="7" y1="7" x2="7.01" y2="7"/></svg></span> <span>Data Produk</span></a>
+            <a href="/tren" class="nav-sub admin-only "><span><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg></span> <span>Tren Kreatif <span class="badge" style="margin-left:4px;font-size:0.55rem;padding:1px 6px;background:linear-gradient(135deg,#6c5ce7,#fd79a8);color:#fff;border-radius:4px">Baru</span></span></a>
+            <a href="/custom-audiences" class="nav-sub admin-only "><span><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg></span> <span>Custom Audience </span></a>
+            <a href="/page-post" class="nav-sub admin-only active"><span><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg></span> <span>Post Fanpage </span></a>
+            <a href="/dailyleveling" class="nav-sub admin-only "><span><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg></span> <span>Daily Leveling</span></a>
+            <a href="/cron-management" class="nav-sub admin-only "><span><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg></span> <span>Cron Management</span></a>
+            <a href="/kuota-9router" class="nav-sub admin-only "><span><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20V10"/><path d="M18 20V4"/><path d="M6 20v-4"/></svg></span> <span>Kuota 9Router</span></a>
+
+        </div>
+
+        <div class="nav-section">Report</div>
+        <a class="nav-item" href="#" onclick="toggleSubmenu(event, 'reportSubs')">
+            <span><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg></span> <span>Report</span>
+            <span class="nav-arrow "><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg></span>
+        </a>
+        <div class="nav-subs " id="reportSubs">
+            <a href="/roas" class="nav-sub "><span><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg></span> <span>ROAS Report</span></a>
+            <a href="/bank-konten" class="nav-sub admin-only "><span><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg></span> <span>Bank Konten</span></a>
+            <a href="/bank-konten/genmilk" class="nav-sub admin-only "><span><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2.69l5.66 5.66a8 8 0 1 1-11.31 0z"/></svg></span> <span>Bank Konten GenMilk</span></a>
+            <a href="/bank-kreatif" class="nav-sub admin-only "><span><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg></span> <span>Bank Kreatif</span></a>
+        </div>
+    </nav>
+    <div class="sidebar-user">
+        <div class="user-avatar">GA</div>
+        <div style="flex:1;min-width:0">
+            <div class="user-name">Gilang Aji</div>
+            <div class="user-role">Administrator</div>
+        </div>
+        <button class="btn-logout" onclick="logout()" title="Logout"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg></button>
+    </div>
+</aside>
+
+<main class="main expanded" id="mainContent">
+    <div class="pp-wrap">
+        <div class="pp-header">
+            <div>
+                <h1>📣 Post Fanpage</h1>
+                <div class="pp-desc">Posting konten dari Bank Konten ke fanspage Generos — pilih page, pilih konten, isi caption &amp; judul, lalu posting.</div>
+            </div>
+        </div>
+
+        <!-- Wizard steps -->
+        <div class="wizard" id="wizard">
+            <div class="wstep active" id="wstep1"><span class="wnum">1</span> <span>Pilih Fanspage</span></div>
+            <span class="warrow">→</span>
+            <div class="wstep" id="wstep2"><span class="wnum">2</span> <span>Pilih Konten</span></div>
+            <span class="warrow">→</span>
+            <div class="wstep" id="wstep3"><span class="wnum">3</span> <span>Caption &amp; Posting</span></div>
+        </div>
+
+        <!-- Step 1: Pilih fanspage -->
+        <div class="card" id="step1">
+            <h3>1️⃣ Pilih Fanspage</h3>
+            <div class="acc-grid" id="pageGrid"></div>
+        </div>
+
+        <!-- Step 2: Pilih konten -->
+        <div class="card" id="step2" style="display:none">
+            <h3>2️⃣ Pilih Konten dari Bank Konten</h3>
+            <div class="ktoolbar">
+                <input type="text" id="kontenSearch" placeholder="🔍 Cari konten..." oninput="renderKonten()">
+                <select id="folderFilter" onchange="renderKonten()"></select>
+                <span class="kcount" id="kontenCount"></span>
+            </div>
+            <div class="konten-grid" id="kontenGrid"></div>
+        </div>
+
+        <!-- Step 3: Caption & posting -->
+        <div class="card" id="step3" style="display:none">
+            <h3>3️⃣ Caption &amp; Posting</h3>
+            <div class="sel-chips" id="selChips"></div>
+            <div class="pp-preview">
+                <div class="prev-col">
+                    <div class="form-group">
+                        <label for="postTitle">Judul Video <span class="req">*</span> <span style="font-weight:400;color:var(--text-muted)">(muncul sebagai judul post)</span></label>
+                        <input type="text" id="postTitle" placeholder="Contoh: Generos Multivitamin Anak — Nutrisi Otak" oninput="updatePreview()">
+                    </div>
+                    <div class="form-group">
+                        <label for="postCaption">Caption <span class="req">*</span></label>
+                        <textarea id="postCaption" placeholder="Tulis caption post di sini..." oninput="updatePreview()" style="min-height:120px"></textarea>
+                        <div class="char-count" id="captionCount">0 / 2000</div>
+                    </div>
+                    <div class="form-group" id="postLinkGroup">
+                        <label for="postLink">Link URL <span style="font-weight:400;color:var(--text-muted)">(opsional — biar post punya link ke landing, bisa diklik)</span></label>
+                        <input type="text" id="postLink" placeholder="https://generosindo.com/..." oninput="updatePreview()">
+                    </div>
+                    <div class="form-group" id="postCtaGroup">
+                        <label for="postCta">Call to Action <span style="font-weight:400;color:var(--text-muted)">(opsional — post jadi punya tombol CTA, siap dipakai "Gunakan Postingan" di Campaign Studio)</span></label>
+                        <select id="postCta" style="width:100%;font-family:inherit;font-size:0.8rem;padding:8px 10px;border-radius:8px;border:1px solid var(--border);background:var(--bg);color:var(--text);outline:none" onchange="updatePreview()">
+                            <option value="">— Tanpa CTA —</option>
+                            <option>Ambil Promo</option>
+                            <option>Dapatkan Penawaran</option>
+                            <option>Beli Sekarang</option>
+                            <option>Pelajari Lebih Lanjut</option>
+                            <option>Daftar</option>
+                            <option>Pesan Sekarang</option>
+                        </select>
+                        <div style="font-size:0.62rem;opacity:0.6;margin-top:4px">💡 Kalau CTA dipilih, Link URL jadi wajib. Post jadi LINK POST + tombol CTA — nanti bisa dipilih sebagai "Gunakan Postingan" di Campaign Studio (CTA bawaannya ikut otomatis).</div>
+                    </div>
+                    <div style="display:flex;gap:8px;justify-content:flex-end">
+                        <button class="btn" onclick="resetSelection()">↺ Reset</button>
+                        <button class="btn btn-primary" id="btnPublish" onclick="openConfirmModal()" disabled style="font-size:0.8rem;padding:9px 18px">📤 Posting</button>
+                    </div>
+                </div>
+                <div class="prev-col">
+                    <div class="preview-card">
+                        <div class="preview-head">
+                            <div class="preview-avatar" id="pvAvatar">?</div>
+                            <div>
+                                <div class="preview-page" id="pvPage">—</div>
+                                <div class="preview-time" id="pvTime">Sekarang</div>
+                            </div>
+                        </div>
+                        <div class="preview-text" id="pvText">Caption akan tampil di sini...</div>
+                        <div class="preview-cta" id="pvCtaBtn" style="display:none;background:var(--accent);color:#fff;text-align:center;padding:10px;border-radius:8px;font-weight:700;margin-top:10px">Ambil Promo</div>
+                        <div class="preview-media-box" id="pvMediaBox">
+                            <img id="pvMedia" class="preview-media" src="" alt="" style="display:none">
+                            <span class="preview-play" id="pvPlay" style="display:none;cursor:pointer" onclick="playSelectedKonten()" title="Putar video">▶</span>
+                            <div class="preview-title" id="pvTitle" style="display:none"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Riwayat -->
+        <div class="card">
+            <h3>📜 Riwayat Posting</h3>
+            <div class="ktoolbar" style="margin-bottom:10px">
+                <select id="historyPageFilter" onchange="loadHistory(1)">
+                    <option value="">— Semua Fanspage —</option>
+                </select>
+                <span class="kcount" id="historyCount"></span>
+            </div>
+            <div class="table-wrap">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Waktu</th>
+                            <th>Fanspage</th>
+                            <th>Konten</th>
+                            <th>Judul</th>
+                            <th>Status</th>
+                            <th>Link</th>
+                        </tr>
+                    </thead>
+                    <tbody id="historyBody"></tbody>
+                </table>
+            </div>
+            <div id="historyPagination" style="display:flex;align-items:center;gap:6px;flex-wrap:wrap;margin-top:12px;justify-content:center"></div>
+        </div>
+    </div>
+</main>
+
+<!-- Confirm modal -->
+<div class="modal-overlay" id="confirmModal">
+    <div class="modal">
+        <h3>⚠️ Konfirmasi Posting</h3>
+        <div class="modal-sub">Post akan tampil publik di fanspage.</div>
+        <div class="modal-warn">Posting ini <b>langsung tampil</b> ke followers fanspage. Pastikan judul &amp; caption sudah benar.</div>
+        <div class="sel-chip" style="margin-bottom:8px"><span class="scl">Fanspage:</span> <span class="scv" id="cmPage">—</span></div>
+        <div class="sel-chip"><span class="scl">Konten:</span> <span class="scv" id="cmKonten">—</span></div>
+        <div class="modal-actions">
+            <button class="btn" onclick="closeConfirmModal()">Batal</button>
+            <button class="btn btn-primary" id="btnConfirmPublish" onclick="doPublish()" style="font-size:0.8rem;padding:9px 18px">📤 Yakin, Posting!</button>
+        </div>
+    </div>
+</div>
+
+<!-- Video player modal (Google Drive) -->
+<div class="vmodal-overlay" id="vmodalOverlay" onclick="if(event.target===this)closeVideoModal()">
+    <div class="vmodal">
+        <div class="vmodal-head">
+            <span class="vtitle" id="vmodalTitle">Memuat...</span>
+            <button class="vmodal-close" onclick="closeVideoModal()">✕</button>
+        </div>
+        <div class="vmodal-body">
+            <div class="vmodal-loading" id="vmodalLoading">⏳ Memuat video dari Google Drive...</div>
+            <video id="vmodalVideo" controls style="display:none"></video>
+            <iframe id="vmodalIframe" title="Google Drive preview" allow="autoplay; fullscreen" allowfullscreen style="display:none;width:100%;height:100%;border:0"></iframe>
+        </div>
+        <div class="vmodal-openlink">
+            <span>Video dimuat dari Google Drive (file public)</span>
+            <a id="vmodalOpenLink" href="#" target="_blank">Buka di Google Drive ↗</a>
+        </div>
+    </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+let pages = [];
+let konten = [];
+let folders = [];
+let selectedPage = null;
+let selectedKonten = null;
+
+// ===== LOAD =====
+async function loadPages() {
+    const grid = document.getElementById('pageGrid');
+    grid.innerHTML = '<div class="skeleton" style="height:80px;grid-column:1/-1"></div>';
+    try {
+        const r = await fetch('/api/page-post/pages');
+        const d = await r.json();
+        if (!d.status || d.status !== 'ok') throw new Error(d.message || 'Gagal load pages');
+        pages = d.pages || [];
+        grid.innerHTML = '';
+        if (!pages.length) { grid.innerHTML = '<div class="kempty">Tidak ada fanspage yang bisa diakses</div>'; return; }
+        pages.forEach(p => {
+            const card = document.createElement('div');
+            card.className = 'acc-card' + (selectedPage && selectedPage.id === p.id ? ' selected' : '');
+            card.onclick = () => selectPage(p);
+            const initial = (p.name || '?').trim().charAt(0).toUpperCase();
+            card.innerHTML = `
+                <div class="acc-check">✓</div>
+                <div class="acc-name">${escapeHtml(p.name)}</div>
+                <div class="acc-info">${escapeHtml(p.id)}</div>
+                <div class="acc-info">${escapeHtml(p.category || '')}</div>`;
+            grid.appendChild(card);
+        });
+    } catch (e) {
+        grid.innerHTML = '<div class="kempty">⚠️ ' + escapeHtml(e.message || 'Gagal load pages') + '</div>';
+    }
+}
+
+async function loadKonten() {
+    const grid = document.getElementById('kontenGrid');
+    grid.innerHTML = '<div class="skeleton" style="height:100px;grid-column:1/-1"></div>';
+    try {
+        const pid = selectedPage ? encodeURIComponent(selectedPage.id) : '';
+        const pname = selectedPage ? encodeURIComponent(selectedPage.name || '') : '';
+        const r = await fetch(`/api/page-post/konten?page_id=${pid}&page_name=${pname}`);
+        const d = await r.json();
+        if (!d.status || d.status !== 'ok') throw new Error(d.message || 'Gagal load konten');
+        konten = d.files || [];
+        // folder filter
+        folders = [...new Set(konten.map(k => k.folder || 'Root').filter(Boolean))];
+        const sel = document.getElementById('folderFilter');
+        sel.innerHTML = '<option value="">Semua Folder</option>' + folders.map(f => `<option value="${escapeHtml(f)}">${escapeHtml(f)}</option>`).join('');
+        renderKonten();
+    } catch (e) {
+        grid.innerHTML = '<div class="kempty">⚠️ ' + escapeHtml(e.message || 'Gagal load konten') + '</div>';
+    }
+}
+
+let historyPage = 1;
+let historyPages = 1;
+let historyTotal = 0;
+
+// ===== Format tanggal Indonesia =====
+const DAY_ID = ['Minggu','Senin','Selasa','Rabu','Kamis','Jumat','Sabtu'];
+const MONTH_ID = ['Jan','Feb','Mar','Apr','Mei','Jun','Jul','Agu','Sep','Okt','Nov','Des'];
+function fmtDateTimeId(iso) {
+    if (!iso) return '';
+    const d = new Date(iso);
+    if (isNaN(d.getTime())) return iso.replace('T',' ').slice(0,16);
+    const hh = String(d.getHours()).padStart(2,'0');
+    const mm = String(d.getMinutes()).padStart(2,'0');
+    return `${DAY_ID[d.getDay()]}, ${d.getDate()} ${MONTH_ID[d.getMonth()]} ${d.getFullYear()} • ${hh}:${mm}`;
+}
+
+// ===== Format tanggal Indonesia =====
+async function loadHistoryPages() {
+    const sel = document.getElementById('historyPageFilter');
+    if (!sel) return;
+    try {
+        const r = await fetch('/api/page-post/history-pages');
+        const d = await r.json();
+        sel.innerHTML = '<option value="">— Semua Fanspage —</option>' + (d.pages || []).map(p =>
+            `<option value="${escapeHtml(p.page_id)}">${escapeHtml(p.page_name)}</option>`
+        ).join('');
+    } catch (e) { /* dropdown kosong, fine */ }
+}
+
+async function loadHistory(page) {
+    if (page !== undefined) historyPage = page;
+    const tb = document.getElementById('historyBody');
+    tb.innerHTML = '<tr><td colspan="6" class="kempty">Memuat riwayat...</td></tr>';
+    try {
+        const pageFilter = document.getElementById('historyPageFilter');
+        const pid = pageFilter ? encodeURIComponent(pageFilter.value) : '';
+        const r = await fetch(`/api/page-post/history?page=${historyPage}&per_page=10&page_id=${pid}`);
+        const d = await r.json();
+        const posts = (d.posts || []);
+        historyPages = d.pages || 1;
+        historyTotal = d.total || 0;
+        const hc = document.getElementById('historyCount');
+        if (hc) hc.textContent = historyTotal + ' posting';
+        if (historyPage > historyPages) { historyPage = historyPages; loadHistory(); return; }
+        if (!posts.length) {
+            tb.innerHTML = '<tr><td colspan="6" class="kempty">Belum ada posting</td></tr>';
+            renderHistoryPagination();
+            return;
+        }
+        tb.innerHTML = posts.map(p => {
+            const t = fmtDateTimeId(p.created_at || '');
+            const stClass = p.status === 'published' ? 'published' : (p.status === 'failed' ? 'failed' : 'pending');
+            const stLabel = p.status === 'published' ? '✅ Published' : (p.status === 'failed' ? '❌ Gagal' : '⏳ Pending');
+            const link = p.status === 'published' && p.permalink_url
+                ? `<a href="${escapeHtml(p.permalink_url)}" target="_blank" style="color:var(--accent-light)">Lihat</a>` : '';
+            const err = p.error_message ? `<div style="font-size:0.6rem;color:var(--danger);max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap" title="${escapeHtml(p.error_message)}">${escapeHtml(p.error_message.slice(0,80))}</div>` : '';
+            return `<tr>
+                <td>${escapeHtml(t)}</td>
+                <td>${escapeHtml(p.page_name || '')}</td>
+                <td style="max-width:180px"><div style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap" title="${escapeHtml(p.content_name || '')}">${escapeHtml(p.content_name || '')}</div></td>
+                <td style="max-width:180px"><div style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap" title="${escapeHtml(p.title || '')}">${escapeHtml(p.title || '')}</div></td>
+                <td><span class="hstatus ${stClass}">${stLabel}</span>${err}</td>
+                <td>${link}</td>
+            </tr>`;
+        }).join('');
+        renderHistoryPagination();
+    } catch (e) {
+        tb.innerHTML = '<tr><td colspan="6" class="kempty">⚠️ ' + escapeHtml(e.message || 'Gagal load riwayat') + '</td></tr>';
+    }
+}
+
+function renderHistoryPagination() {
+    const el = document.getElementById('historyPagination');
+    if (!el) return;
+    if (historyPages <= 1) { el.innerHTML = ''; return; }
+    let html = '';
+    // Prev
+    html += `<button class="pg-btn" onclick="loadHistory(${historyPage - 1})" ${historyPage <= 1 ? 'disabled' : ''}>‹ Prev</button>`;
+    // Nomor halaman (max 7 tombol)
+    let start = Math.max(1, historyPage - 3);
+    let end = Math.min(historyPages, start + 6);
+    start = Math.max(1, end - 6);
+    if (start > 1) html += `<span class="pg-dots">…</span>`;
+    for (let i = start; i <= end; i++) {
+        html += `<button class="pg-btn ${i === historyPage ? 'active' : ''}" onclick="loadHistory(${i})">${i}</button>`;
+    }
+    if (end < historyPages) html += `<span class="pg-dots">…</span>`;
+    // Next
+    html += `<button class="pg-btn" onclick="loadHistory(${historyPage + 1})" ${historyPage >= historyPages ? 'disabled' : ''}>Next ›</button>`;
+    html += `<span class="pg-info">Halaman ${historyPage} / ${historyPages} — ${historyTotal} posting</span>`;
+    el.innerHTML = html;
+}
+
+// ===== SELECTION =====
+function selectPage(p) {
+    selectedPage = p;
+    document.querySelectorAll('#pageGrid .acc-card').forEach(c => c.classList.remove('selected'));
+    document.getElementById('step2').style.display = '';
+    document.getElementById('wstep1').classList.add('done');
+    document.getElementById('wstep2').classList.add('active');
+    updateChips();
+    updatePreview();
+    // auto-select konten pertama? biarkan manual
+    loadKonten();
+    // scroll ke step 2
+    document.getElementById('step2').scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+
+function selectKonten(k) {
+    selectedKonten = k;
+    document.querySelectorAll('#kontenGrid .kcard').forEach(c => c.classList.remove('selected'));
+    document.getElementById('step3').style.display = '';
+    document.getElementById('wstep2').classList.add('done');
+    document.getElementById('wstep3').classList.add('active');
+    updateChips();
+    updatePreview();
+    document.getElementById('step3').scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+
+function resetSelection() {
+    selectedPage = null;
+    selectedKonten = null;
+    document.getElementById('step2').style.display = 'none';
+    document.getElementById('step3').style.display = 'none';
+    document.getElementById('postTitle').value = '';
+    document.getElementById('postCaption').value = '';
+    document.getElementById('postLink').value = '';
+    document.getElementById('postCta').value = '';
+    const _cb = document.getElementById('pvCtaBtn');
+    if (_cb) _cb.style.display = 'none';
+    document.getElementById('btnPublish').disabled = true;
+    document.querySelectorAll('#wizard .wstep').forEach(w => w.classList.remove('active', 'done'));
+    document.getElementById('wstep1').classList.add('active');
+    loadPages();
+}
+
+// ===== KONTEN GRID =====
+function renderKonten() {
+    const q = (document.getElementById('kontenSearch').value || '').toLowerCase().trim();
+    const folder = document.getElementById('folderFilter').value;
+    let list = konten.filter(k => {
+        if (folder && (k.folder || 'Root') !== folder) return false;
+        if (q && !(k.name || '').toLowerCase().includes(q)) return false;
+        return true;
+    });
+    document.getElementById('kontenCount').textContent = list.length + ' konten';
+    const grid = document.getElementById('kontenGrid');
+    if (!list.length) { grid.innerHTML = '<div class="kempty">Tidak ada konten yang cocok</div>'; return; }
+    grid.innerHTML = list.map(k => {
+        const ct = k.content_type === 'image' ? 'image' : 'video';
+        const badge = ct === 'image' ? '<span class="kbadge image">🖼️ GAMBAR</span>' : '<span class="kbadge video">🎬 VIDEO</span>';
+        const thumb = k.thumbnail || ('https://drive.google.com/thumbnail?id=' + k.id + '&sz=w320');
+        const meta = (k.folder || 'Root') + ' • ' + (k.size_mb ? k.size_mb + ' MB' : '');
+        const sel = selectedKonten && selectedKonten.id === k.id ? ' selected' : '';
+        const playBtn = ct === 'video'
+            ? `<div class="kplay" onclick="event.stopPropagation(); playKonten('${k.id}','${escapeHtml(String(k.name||'').replace(/'/g,"\\'"))}')">▶</div>`
+            : '';
+        return `<div class="kcard${sel}" onclick="selectKonten(konten.find(x => x.id === '${k.id}'))">
+            ${badge}
+            <div class="kcheck">✓</div>
+            ${playBtn}
+            <img class="kthumb" src="${escapeHtml(thumb)}" alt="" loading="lazy" onerror="this.style.background='var(--border)'">
+            <div class="kname" title="${escapeHtml(k.name || '')}">${escapeHtml(k.name || '')}</div>
+            <div class="kmeta">${escapeHtml(meta)}</div>
+        </div>`;
+    }).join('');
+}
+
+// ===== CHIPS + PREVIEW =====
+function updateChips() {
+    const box = document.getElementById('selChips');
+    let html = '';
+    if (selectedPage) html += `<div class="sel-chip"><span class="scl">Fanspage:</span> <span class="scv">${escapeHtml(selectedPage.name)}</span></div>`;
+    if (selectedKonten) html += `<div class="sel-chip"><span class="scl">Konten:</span> <span class="scv">${escapeHtml(selectedKonten.name)}</span></div>`;
+    box.innerHTML = html;
+}
+
+function updatePreview() {
+    // avatar
+    const av = document.getElementById('pvAvatar');
+    av.textContent = selectedPage ? (selectedPage.name || '?').trim().charAt(0).toUpperCase() : '?';
+    document.getElementById('pvPage').textContent = selectedPage ? selectedPage.name : '—';
+    document.getElementById('pvTime').textContent = 'Sekarang';
+    const capEl = document.getElementById('postCaption');
+    const cap = capEl.value.trim() ? escapeHtml(capEl.value) : '<span style="color:var(--text-muted)">Caption akan tampil di sini...</span>';
+    const link = document.getElementById('postLink').value.trim();
+    document.getElementById('pvText').innerHTML = link ? (cap + '<br><br>' + escapeHtml(link)) : cap;
+    document.getElementById('captionCount').textContent = capEl.value.length + ' / 2000';
+    const ctaVal = document.getElementById('postCta').value;
+    const ctaBtn = document.getElementById('pvCtaBtn');
+    if (ctaBtn) {
+        ctaBtn.style.display = ctaVal ? 'block' : 'none';
+        ctaBtn.textContent = ctaVal || '';
+    }
+
+    const media = document.getElementById('pvMedia');
+    const play = document.getElementById('pvPlay');
+    const title = document.getElementById('pvTitle');
+    if (selectedKonten) {
+        const thumb = selectedKonten.thumbnail || ('https://drive.google.com/thumbnail?id=' + selectedKonten.id + '&sz=w320');
+        media.src = thumb;
+        media.style.display = 'block';
+        const isVideo = (selectedKonten.content_type || 'video') !== 'image';
+        play.style.display = isVideo ? 'block' : 'none';
+        const t = document.getElementById('postTitle').value;
+        title.style.display = isVideo && t ? 'block' : 'none';
+        title.textContent = t;
+    } else {
+        media.style.display = 'none';
+        play.style.display = 'none';
+        title.style.display = 'none';
+    }
+    // enable publish
+    const btn = document.getElementById('btnPublish');
+    btn.disabled = !(selectedPage && selectedKonten && document.getElementById('postCaption').value.trim());
+}
+
+// ===== VIDEO PLAYER (Google Drive) =====
+function playKonten(id, name) {
+    const overlay = document.getElementById('vmodalOverlay');
+    const video = document.getElementById('vmodalVideo');
+    const iframe = document.getElementById('vmodalIframe');
+    const loading = document.getElementById('vmodalLoading');
+    const title = document.getElementById('vmodalTitle');
+    const link = document.getElementById('vmodalOpenLink');
+    const previewUrl = 'https://drive.google.com/file/d/' + id + '/preview';
+    const directUrl = 'https://drive.google.com/uc?export=download&id=' + id;
+    title.textContent = name || 'Video';
+    link.href = 'https://drive.google.com/file/d/' + id + '/view';
+    // Reset state
+    video.src = '';
+    video.style.display = 'none';
+    iframe.src = '';
+    iframe.style.display = 'none';
+    loading.style.display = '';
+    loading.textContent = '⏳ Memuat video dari Google Drive...';
+    overlay.classList.add('active');
+    // Coba direct video dulu; kalau gagal → fallback iframe player resmi Drive
+    video.oncanplay = () => { loading.style.display = 'none'; video.style.display = 'block'; };
+    video.onerror = () => {
+        loading.textContent = '⏳ Mengalihkan ke player Google Drive...';
+        video.style.display = 'none';
+        iframe.src = previewUrl;
+        iframe.style.display = 'block';
+        loading.style.display = 'none';
+    };
+    video.src = directUrl;
+    video.play().catch(() => {});
+}
+function playSelectedKonten() {
+    if (!selectedKonten) return;
+    playKonten(selectedKonten.id, selectedKonten.name || '');
+}
+function closeVideoModal() {
+    const overlay = document.getElementById('vmodalOverlay');
+    const video = document.getElementById('vmodalVideo');
+    const iframe = document.getElementById('vmodalIframe');
+    video.pause();
+    video.src = '';
+    iframe.src = '';
+    overlay.classList.remove('active');
+}
+document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape') closeVideoModal();
+});
+
+// ===== PUBLISH =====
+function openConfirmModal() {
+    if (!selectedPage || !selectedKonten) return;
+    document.getElementById('cmPage').textContent = selectedPage.name;
+    document.getElementById('cmKonten').textContent = selectedKonten.name;
+    document.getElementById('confirmModal').classList.add('active');
+}
+function closeConfirmModal() {
+    document.getElementById('confirmModal').classList.remove('active');
+}
+
+async function doPublish() {
+    const title = document.getElementById('postTitle').value.trim();
+    const caption = document.getElementById('postCaption').value.trim();
+    if (!caption) { toast('Caption wajib diisi', 'error'); return; }
+    const ctaVal = document.getElementById('postCta').value;
+    const linkVal = document.getElementById('postLink').value.trim();
+    if (ctaVal && !linkVal) { toast('Link URL wajib diisi kalau Call to Action dipilih', 'error'); return; }
+    const btn = document.getElementById('btnConfirmPublish');
+    btn.disabled = true; btn.textContent = '⏳ Posting...';
+    try {
+        const r = await fetch('/api/page-post/publish', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                page_id: selectedPage.id,
+                page_name: selectedPage.name,
+                content_id: selectedKonten.id,
+                content_name: selectedKonten.name,
+                content_type: selectedKonten.content_type || 'video',
+                title: title,
+                caption: caption,
+                link: document.getElementById('postLink').value.trim(),
+                cta: document.getElementById('postCta').value,
+                thumbnail: selectedKonten ? (selectedKonten.thumbnail || 'https://drive.google.com/thumbnail?id=' + selectedKonten.id + '&sz=w320') : ''
+            })
+        });
+        const d = await r.json();
+        closeConfirmModal();
+        if (d.status === 'ok') {
+            toast('✅ ' + (d.message || 'Post berhasil dipublish'), 'success');
+            if (d.permalink) {
+                setTimeout(() => { window.open(d.permalink, '_blank'); }, 800);
+            }
+            loadHistory();
+        } else {
+            toast('❌ ' + (d.message || 'Posting gagal'), 'error');
+        }
+    } catch (e) {
+        closeConfirmModal();
+        toast('❌ ' + e.message, 'error');
+    } finally {
+        btn.disabled = false; btn.textContent = '📤 Yakin, Posting!';
+    }
+}
+
+// ===== HELPERS =====
+function escapeHtml(s) {
+    return String(s ?? '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;');
+}
+let toastTimer = null;
+function toast(msg, type) {
+    const el = document.getElementById('toast');
+    el.textContent = msg;
+    el.className = 'toast toast-' + (type || 'info');
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(() => { el.className = 'toast'; }, 4000);
+}
+
+// ===== SIDEBAR / THEME =====
+function toggleTheme() {
+    const html = document.documentElement;
+    const cur = html.getAttribute('data-theme');
+    const next = cur === 'dark' ? 'light' : 'dark';
+    html.setAttribute('data-theme', next);
+    localStorage.setItem('rg-theme', next);
+}
+function toggleSidebar() {
+    const sidebar = document.getElementById('sidebar');
+    const main = document.getElementById('mainContent');
+    const backdrop = document.getElementById('sidebarBackdrop');
+    if (window.innerWidth <= 768) {
+        sidebar.classList.toggle('open');
+        if (backdrop) backdrop.classList.toggle('show');
+    } else {
+        sidebar.classList.toggle('collapsed');
+        main.classList.toggle('expanded');
+    }
+    localStorage.setItem('rg-sidebar', sidebar.classList.contains('collapsed') ? '1' : '0');
+}
+if (typeof window.toggleSubmenu !== 'function') {
+    window.toggleSubmenu = function(e, id) {
+        e.preventDefault();
+        const el = document.getElementById(id);
+        if (!el) return;
+        const open = el.classList.contains('open');
+        el.classList.toggle('open', !open);
+        const arrow = e.currentTarget.querySelector('.nav-arrow');
+        if (arrow) arrow.classList.toggle('open', !open);
+    };
+}
+function logout() { window.location.href = '/logout'; }
+
+(function init() {
+    if (localStorage.getItem('rg-sidebar') === '1') {
+        document.getElementById('sidebar').classList.add('collapsed');
+        document.getElementById('mainContent').classList.add('expanded');
+    }
+    document.getElementById('currentDate').textContent = fmtDateTimeId(new Date().toISOString());
+    loadPages();
+    loadHistoryPages();
+    loadHistory();
+})();
+</script>
+</body>
+</html>

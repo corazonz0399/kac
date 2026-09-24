@@ -1,0 +1,718 @@
+<!DOCTYPE html>
+<html lang="id" data-theme="dark">
+<head>
+<link rel="icon" type="image/png" href="/static/favicon.png">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Tren Kreatif | Kowalski Ads Center</title>
+<script>!function(){var t=localStorage.getItem('rg-theme')||'dark';document.documentElement.setAttribute('data-theme',t)}()</script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/static/style.css?v=3">
+<style>
+:root {
+    --bg: #0a0a0f;
+    --bg-card: #12121a;
+    --bg-card-hover: #1a1a2e;
+    --accent: #6c5ce7;
+    --accent-light: #a29bfe;
+    --accent-gradient: linear-gradient(135deg, #6c5ce7, #fd79a8);
+    --text: #e4e4e7;
+    --text-muted: #888899;
+    --border: #1e1e30;
+    --success: #00b894;
+    --warning: #fdcb6e;
+    --danger: #ff6b6b;
+}
+[data-theme="light"] {
+    --bg: #f8f9fc;
+    --bg-card: #ffffff;
+    --bg-card-hover: #f0f2f8;
+    --text: #1a1a2e;
+    --text-muted: #6b7280;
+    --border: #e5e7eb;
+    --success: #059669;
+    --warning: #d97706;
+    --danger: #dc2626;
+}
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body {
+    font-family: 'Inter', -apple-system, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.6;
+}
+/* Topbar */
+.topbar {
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    z-index: 100;
+    background: rgba(10,10,15,0.85);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border-bottom: 1px solid var(--border);
+    padding: 0 20px;
+    height: 52px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+[data-theme="light"] .topbar { background: rgba(255,255,255,0.85); }
+.topbar-left { display: flex; align-items: center; gap: 12px; }
+.topbar-left .logo { font-weight: 800; font-size: 1rem; }
+.topbar-right { display: flex; align-items: center; gap: 10px; }
+.theme-toggle {
+    background: none; border: 1px solid var(--border);
+    border-radius: 8px; padding: 4px 10px;
+    cursor: pointer; font-size: 1rem;
+    color: var(--text-muted);
+    transition: all 0.2s;
+}
+.theme-toggle:hover { border-color: var(--accent); color: var(--text); }
+.topbar-date { font-size: 0.75rem; color: var(--text-muted); }
+.sidebar-toggle {
+    background: none; border: 1px solid var(--border);
+    border-radius: 8px; padding: 4px 8px;
+    cursor: pointer; font-size: 1rem;
+    color: var(--text-muted);
+    transition: all 0.2s;
+}
+.sidebar-toggle:hover { border-color: var(--accent); color: var(--text); }
+.topbar-inner { width:100%; display:flex; align-items:center; justify-content:space-between; gap:12px; }
+
+/* Main */
+.main {
+    margin-top: 52px;
+    margin-left: 220px;
+    padding: 20px;
+    transition: margin-left 0.25s ease;
+}
+.main.expanded { margin-left: 0; }
+
+/* Sidebar */
+.sidebar {
+    position: fixed;
+    top: 52px; left: 0; bottom: 0;
+    width: 220px;
+    background: var(--bg-card);
+    border-right: 1px solid var(--border);
+    display: flex;
+    flex-direction: column;
+    z-index: 90;
+    transition: width 0.25s ease;
+}
+.sidebar.collapsed { width: 0; overflow: hidden; border-right: none; }
+.sidebar-brand {
+    display: flex; align-items: center; gap: 10px;
+    padding: 14px 16px;
+    border-bottom: 1px solid var(--border);
+}
+.brand-name { font-size: 0.8rem; font-weight: 800; }
+.brand-sub { font-size: 0.6rem; color: var(--text-muted); }
+.sidebar-nav { flex: 1; overflow-y: auto; padding: 8px 0; }
+.nav-section {
+    font-size: 0.58rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: var(--text-muted);
+    padding: 12px 16px 4px;
+}
+.nav-item {
+    display: flex; align-items: center; gap: 10px;
+    padding: 8px 16px;
+    color: var(--text);
+    text-decoration: none;
+    font-size: 0.75rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.15s;
+}
+.nav-item:hover { background: var(--bg-card-hover); color: var(--accent-light); }
+.nav-item svg { flex-shrink: 0; }
+.nav-arrow { margin-left: auto; transition: transform 0.2s; }
+.nav-arrow.open { transform: rotate(90deg); }
+.nav-subs { display: none; }
+.nav-subs.open { display: block; }
+.nav-sub {
+    display: flex; align-items: center; gap: 10px;
+    padding: 7px 16px 7px 40px;
+    color: var(--text-muted);
+    text-decoration: none;
+    font-size: 0.7rem;
+    font-weight: 500;
+    transition: all 0.15s;
+}
+.nav-sub:hover { color: var(--accent-light); background: var(--bg-card-hover); }
+.nav-sub.active { color: var(--accent-light); background: rgba(108,92,231,0.1); }
+.sidebar-user {
+    display: flex; align-items: center; gap: 10px;
+    padding: 12px 16px;
+    border-top: 1px solid var(--border);
+}
+.user-avatar {
+    width: 32px; height: 32px; border-radius: 50%;
+    background: var(--accent-gradient);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 0.7rem; font-weight: 800; color: #fff;
+}
+.user-name { font-size: 0.72rem; font-weight: 700; }
+.user-role { font-size: 0.6rem; color: var(--text-muted); }
+.btn-logout { background: none; border: none; color: var(--text-muted); cursor: pointer; padding: 4px; }
+.btn-logout:hover { color: var(--danger); }
+
+/* Sidebar Backdrop (mobile) */
+.sidebar-backdrop { display: none; position: fixed; inset: 0; z-index: 55; background: rgba(0,0,0,0.4); opacity: 0; transition: opacity 0.25s ease; }
+@media (max-width: 768px) {
+    .sidebar-backdrop.show { display: block; opacity: 1; }
+}
+
+/* Badge */
+.badge { display:inline-block; font-size:0.62rem; font-weight:700; padding:2px 8px; border-radius:6px; }
+
+/* Buttons */
+.btn {
+    font-family: inherit;
+    font-size: 0.75rem;
+    font-weight: 600;
+    padding: 6px 12px;
+    border-radius: 8px;
+    border: 1px solid var(--border);
+    background: var(--bg-card);
+    color: var(--text);
+    cursor: pointer;
+    transition: all 0.2s;
+    white-space: nowrap;
+}
+.btn:hover { border-color: var(--accent); background: var(--bg-card-hover); }
+.btn-primary { background: var(--accent); border-color: var(--accent); color: #fff; }
+.btn-primary:hover { background: #5a4bd1; border-color: #5a4bd1; }
+.btn:disabled { opacity: 0.5; cursor: not-allowed; }
+.btn-danger { background: var(--danger); border-color: var(--danger); color: #fff; }
+
+/* Page header */
+.pp-wrap { max-width: none; width: 100%; }
+.pp-header { display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:16px; flex-wrap:wrap; gap:10px; }
+.pp-header h1 { font-size:1.2rem; font-weight:800; display:flex; align-items:center; gap:8px; }
+.pp-desc { font-size:0.8rem; color:var(--text-muted); margin-top:4px; }
+
+/* Wizard steps */
+.wizard { display:flex; align-items:center; gap:10px; margin-bottom:18px; flex-wrap:wrap; }
+.wstep { display:flex; align-items:center; gap:8px; padding:8px 14px; border-radius:10px; border:1px solid var(--border); background:var(--bg-card); font-size:0.72rem; font-weight:700; color:var(--text-muted); transition:all 0.2s; }
+.wstep .wnum { width:20px; height:20px; border-radius:50%; background:var(--border); color:var(--text-muted); display:flex; align-items:center; justify-content:center; font-size:0.65rem; font-weight:800; }
+.wstep.active { border-color:var(--accent); color:var(--text); background:rgba(108,92,231,0.08); }
+.wstep.active .wnum { background:var(--accent); color:#fff; }
+.wstep.done { border-color:var(--success); color:var(--success); }
+.wstep.done .wnum { background:var(--success); color:#fff; }
+.warrow { color:var(--text-muted); font-size:0.8rem; }
+
+/* Card */
+.card { background: var(--bg-card); border: 1px solid var(--border); border-radius: 16px; padding: 20px; transition: all 0.3s; margin-bottom: 16px; }
+.card h3 { font-size: 0.85rem; font-weight: 600; color: var(--text-muted); margin-bottom: 12px; }
+
+/* Page grid (step 1) */
+.acc-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(230px,1fr)); gap:10px; }
+.acc-card { background:var(--bg-card); border:1px solid var(--border); border-radius:12px; padding:12px 14px; cursor:pointer; transition:all 0.2s; position:relative; }
+.acc-card:hover { border-color:var(--accent); }
+.acc-card.selected { border-color:var(--accent); background:rgba(108,92,231,0.08); }
+.acc-card .acc-name { font-size:0.82rem; font-weight:700; }
+.acc-card .acc-info { font-size:0.68rem; color:var(--text-muted); font-family:monospace; margin-top:2px; }
+.acc-card .acc-check { position:absolute; top:10px; right:12px; color:var(--accent-light); font-size:0.9rem; display:none; }
+.acc-card.selected .acc-check { display:block; }
+
+/* Konten toolbar (step 2) */
+.ktoolbar { display:flex; gap:10px; margin-bottom:12px; flex-wrap:wrap; align-items:center; }
+.ktoolbar input[type=text] {
+    flex:1; min-width:180px; padding:8px 12px; border-radius:8px; border:1px solid var(--border);
+    background:var(--bg); color:var(--text); font-size:0.78rem; font-family:'Inter',sans-serif; outline:none;
+}
+.ktoolbar input:focus { border-color:var(--accent); }
+.ktoolbar select {
+    padding:8px 12px; border-radius:8px; border:1px solid var(--border);
+    background:var(--bg); color:var(--text); font-size:0.75rem; font-family:'Inter',sans-serif; outline:none; cursor:pointer;
+}
+.kcount { font-size:0.7rem; color:var(--text-muted); }
+
+/* Konten grid */
+.konten-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(170px,1fr)); gap:10px; }
+.kcard { background:var(--bg-card); border:1px solid var(--border); border-radius:12px; overflow:hidden; cursor:pointer; transition:all 0.2s; position:relative; }
+.kcard:hover { border-color:var(--accent); transform:translateY(-1px); }
+.kcard.selected { border-color:var(--accent); background:rgba(108,92,231,0.08); }
+.kcard .kthumb { width:100%; aspect-ratio:16/9; object-fit:cover; background:var(--border); display:block; }
+.kcard .kbadge { position:absolute; top:8px; left:8px; font-size:0.58rem; font-weight:700; padding:2px 8px; border-radius:6px; }
+.kbadge.video { background:rgba(108,92,231,0.9); color:#fff; }
+.kbadge.image { background:rgba(0,184,148,0.9); color:#fff; }
+.kcard .kname { font-size:0.68rem; font-weight:600; padding:8px 10px 4px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+.kcard .kmeta { font-size:0.6rem; color:var(--text-muted); padding:0 10px 8px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+.kcard .kcheck { position:absolute; top:8px; right:8px; background:var(--accent); color:#fff; width:20px; height:20px; border-radius:50%; display:none; align-items:center; justify-content:center; font-size:0.7rem; font-weight:800; }
+.kcard.selected .kcheck { display:flex; }
+.kcard .kplay {
+    position:absolute; top:50%; left:50%; transform:translate(-50%,-50%);
+    width:38px; height:38px; border-radius:50%;
+    background:rgba(10,10,15,0.7); border:2px solid rgba(255,255,255,0.85);
+    color:#fff; display:flex; align-items:center; justify-content:center;
+    font-size:0.9rem; cursor:pointer; opacity:0; transition:opacity 0.2s;
+    pointer-events:auto; z-index:3;
+}
+.kcard:hover .kplay { opacity:1; }
+.kcard .kplay:hover { background:var(--accent); border-color:var(--accent); }
+
+/* Video player modal (Google Drive) */
+.vmodal-overlay { display:none; position:fixed; inset:0; background:rgba(0,0,0,0.85); z-index:300; align-items:center; justify-content:center; padding:20px; }
+.vmodal-overlay.active { display:flex; }
+.vmodal { background:var(--bg-card); border:1px solid var(--border); border-radius:16px; max-width:760px; width:100%; overflow:hidden; box-shadow:0 20px 60px rgba(0,0,0,0.5); }
+.vmodal-head { display:flex; align-items:center; justify-content:space-between; padding:12px 16px; border-bottom:1px solid var(--border); gap:10px; }
+.vmodal-head .vtitle { font-size:0.8rem; font-weight:700; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+.vmodal-close { background:none; border:none; color:var(--text-muted); font-size:1.2rem; cursor:pointer; padding:2px 6px; border-radius:6px; flex-shrink:0; }
+.vmodal-close:hover { color:var(--danger); background:rgba(255,107,107,0.1); }
+.vmodal-body { background:#000; aspect-ratio:16/9; display:flex; align-items:center; justify-content:center; position:relative; }
+.vmodal-body video { width:100%; height:100%; object-fit:contain; }
+.vmodal-loading { color:var(--text-muted); font-size:0.8rem; }
+.vmodal-openlink { padding:10px 16px; font-size:0.68rem; color:var(--text-muted); border-top:1px solid var(--border); display:flex; justify-content:space-between; align-items:center; gap:8px; flex-wrap:wrap; }
+.vmodal-openlink a { color:var(--accent-light); }
+.kempty { text-align:center; padding:40px 0; color:var(--text-muted); font-size:0.8rem; grid-column:1/-1; }
+
+/* Form (step 3) */
+.form-group { margin-bottom:14px; }
+.form-group label { display:block; font-size:0.7rem; font-weight:700; margin-bottom:6px; color:var(--text); }
+.form-group label .req { color:var(--danger); }
+.form-group input[type=text], .form-group textarea {
+    width:100%; padding:9px 12px; border-radius:8px; border:1px solid var(--border);
+    background:var(--bg); color:var(--text); font-size:0.8rem; font-family:'Inter',sans-serif; outline:none;
+}
+.form-group input:focus, .form-group textarea:focus { border-color:var(--accent); }
+.form-group textarea { min-height:110px; resize:vertical; }
+.char-count { font-size:0.62rem; color:var(--text-muted); text-align:right; margin-top:4px; }
+/* Format font — teks biasa (input/textarea), tanpa toolbar */
+
+/* Preview post */
+.pp-preview { display:flex; gap:16px; flex-wrap:wrap; margin-top:4px; }
+.pp-preview .prev-col { flex:1; min-width:260px; }
+.preview-card { background:var(--bg); border:1px solid var(--border); border-radius:12px; padding:14px; }
+.preview-head { display:flex; align-items:center; gap:10px; margin-bottom:10px; }
+.preview-avatar { width:38px; height:38px; border-radius:50%; background:var(--accent-gradient); display:flex; align-items:center; justify-content:center; font-weight:800; font-size:0.75rem; color:#fff; flex-shrink:0; }
+.preview-page { font-size:0.78rem; font-weight:700; }
+.preview-time { font-size:0.62rem; color:var(--text-muted); }
+.preview-text { font-size:0.78rem; margin-bottom:10px; white-space:pre-wrap; word-break:break-word; }
+/* Format font — teks biasa (input/textarea), tanpa toolbar */
+#postTitle, #postCaption {
+    font-family: inherit;
+}
+.preview-media { width:100%; border-radius:10px; display:block; }
+.preview-media-box { position:relative; }
+.preview-play { position:absolute; top:50%; left:50%; transform:translate(-50%,-50%); font-size:2rem; opacity:0.85; }
+.preview-title { font-size:0.7rem; font-weight:700; padding:10px 12px; }
+
+/* Summary chips */
+.sel-chips { display:flex; flex-wrap:wrap; gap:8px; margin-bottom:14px; }
+.sel-chip { display:inline-flex; align-items:center; gap:6px; background:rgba(108,92,231,0.12); border:1px solid rgba(108,92,231,0.35); color:var(--accent-light); border-radius:8px; padding:5px 10px; font-size:0.68rem; }
+.sel-chip .scl { color:var(--text-muted); font-weight:600; }
+.sel-chip .scv { font-weight:700; max-width:220px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+
+/* History table */
+.table-wrap { overflow-x:auto; }
+.table { width:100%; border-collapse:collapse; font-size:0.75rem; }
+.table th { text-align:left; padding:9px 10px; color:var(--text-muted); font-weight:600; font-size:0.66rem; text-transform:uppercase; letter-spacing:0.4px; border-bottom:1px solid var(--border); white-space:nowrap; }
+.table td { padding:9px 10px; border-bottom:1px solid var(--border); vertical-align:middle; }
+.table tr:hover td { background:var(--bg-card-hover); }
+.hstatus { display:inline-block; font-size:0.6rem; font-weight:700; padding:2px 8px; border-radius:6px; }
+.hstatus.published { background:rgba(0,184,148,0.15); color:#00b894; }
+.hstatus.failed { background:rgba(255,107,107,0.15); color:#ff6b6b; }
+.hstatus.pending { background:rgba(253,203,110,0.15); color:#fdcb6e; }
+.pg-btn { background:var(--bg-card); border:1px solid var(--border); color:var(--text); font-size:0.7rem; font-weight:600; padding:5px 12px; border-radius:8px; cursor:pointer; transition:all .15s; }
+.pg-btn:hover:not(:disabled) { border-color:var(--accent); color:var(--accent); }
+.pg-btn.active { background:var(--accent); border-color:var(--accent); color:#fff; }
+.pg-btn:disabled { opacity:.4; cursor:not-allowed; }
+.pg-dots { color:var(--text-muted); font-size:0.7rem; padding:0 2px; }
+.pg-info { font-size:0.65rem; color:var(--text-muted); margin-left:8px; }
+
+/* Modal */
+.modal-overlay { display:none; position:fixed; inset:0; background:rgba(0,0,0,0.6); z-index:200; align-items:flex-start; justify-content:center; padding:40px 16px; overflow-y:auto; }
+.modal-overlay.active { display:flex; }
+.modal { background:var(--bg-card); border:1px solid var(--border); border-radius:16px; max-width:480px; width:100%; padding:20px; box-shadow:0 20px 60px rgba(0,0,0,0.4); }
+.modal h3 { font-size:1rem; font-weight:800; margin-bottom:6px; }
+.modal-sub { font-size:0.72rem; color:var(--text-muted); margin-bottom:14px; }
+.modal-warn { background:rgba(255,107,107,0.1); border:1px solid rgba(255,107,107,0.3); border-radius:10px; padding:10px 12px; font-size:0.7rem; color:var(--danger); margin-bottom:14px; }
+.modal-actions { display:flex; justify-content:flex-end; gap:8px; margin-top:16px; }
+
+/* Toast */
+.toast { position:fixed; bottom:20px; left:50%; transform:translateX(-50%); padding:10px 20px; border-radius:10px; font-size:0.8rem; font-weight:600; background:var(--bg-card); border:1px solid var(--border); color:var(--text); z-index:9999; opacity:0; transition:all 0.3s; pointer-events:none; max-width:90vw; }
+.toast.toast-success { opacity:1; border-color:var(--success); color:var(--success); }
+.toast.toast-error { opacity:1; border-color:var(--danger); color:var(--danger); }
+.toast.toast-info { opacity:1; border-color:var(--accent); color:var(--accent-light); }
+
+/* Skeleton */
+.skeleton { background:linear-gradient(90deg, var(--bg-card) 25%, var(--bg-card-hover) 50%, var(--bg-card) 75%); background-size:200% 100%; animation:shimmer 1.5s infinite; border-radius:8px; }
+@keyframes shimmer { 0% { background-position:200% 0; } 100% { background-position:-200% 0; } }
+
+/* Mobile */
+@media (max-width: 768px) {
+    .sidebar { width: 240px !important; transform: translateX(-100%); transition: transform 0.25s ease; border-right: 1px solid var(--border); z-index: 60; box-shadow: 4px 0 20px rgba(0,0,0,0.3); }
+    .sidebar.collapsed { transform: translateX(-100%) !important; width: 240px !important; border-right: 1px solid var(--border) !important; overflow: visible; }
+    .sidebar.open { transform: translateX(0); }
+    .main { margin-left: 0 !important; padding: 16px; }
+    .pp-header { flex-direction: column; }
+    .pp-header h1 { font-size: 1.1rem; }
+    .acc-grid { grid-template-columns: repeat(2, 1fr); gap: 8px; }
+    .konten-grid { grid-template-columns: repeat(2, 1fr); gap: 8px; }
+    .wstep { font-size: 0.62rem; padding: 6px 10px; }
+    .topbar-date { display: none; }
+}
+@media (max-width: 480px) {
+    .sidebar { width: 100% !important; }
+    .acc-grid, .konten-grid { grid-template-columns: 1fr 1fr; gap: 6px; }
+}
+
+/* ─── DATA PRODUK ─── */
+.pd-grid { display:grid; grid-template-columns:minmax(300px, 420px) 1fr; gap:16px; align-items:start; }
+@media (max-width: 1100px) { .pd-grid { grid-template-columns:1fr; } }
+.pd-card { background:var(--bg-card); border:1px solid var(--border); border-radius:16px; padding:18px 20px 20px; }
+.pd-card h3 { font-size:0.9rem; font-weight:800; margin-bottom:14px; display:flex; align-items:center; gap:8px; }
+.pd-field { margin-bottom:12px; }
+.pd-field label { display:block; font-size:0.72rem; font-weight:700; color:var(--text-muted); margin-bottom:6px; }
+.pd-req { color:var(--danger); }
+.pd-hint { font-weight:500; opacity:0.75; }
+.pd-input {
+    width:100%; font-family:'Inter',sans-serif; font-size:0.8rem; padding:9px 12px;
+    border-radius:10px; border:1px solid var(--border); background:var(--bg); color:var(--text);
+}
+.pd-input:focus { outline:none; border-color:var(--accent); }
+.pd-area { resize:vertical; line-height:1.5; }
+.pd-actions { display:flex; gap:8px; margin-top:4px; flex-wrap:wrap; }
+.pd-btn {
+    font-family:'Inter',sans-serif; font-size:0.78rem; font-weight:700; padding:9px 16px;
+    border-radius:10px; border:1px solid var(--border); background:var(--bg); color:var(--text);
+    cursor:pointer; transition:all 0.2s;
+}
+.pd-btn:hover { border-color:var(--accent); }
+.pd-btn-primary { background:var(--accent); border-color:var(--accent); color:#fff; }
+.pd-btn-primary:hover { filter:brightness(1.1); }
+.pd-btn-danger { border-color:var(--danger); color:var(--danger); }
+.pd-btn-sm { padding:5px 10px; font-size:0.7rem; }
+.pd-msg { font-size:0.75rem; font-weight:600; margin-top:10px; min-height:16px; }
+.pd-msg.err { color:var(--danger); }
+.pd-msg.ok { color:var(--success); }
+.pd-count { font-size:0.7rem; font-weight:700; color:var(--text-muted); }
+.pd-table { width:100%; border-collapse:collapse; font-size:0.78rem; }
+.pd-table th {
+    text-align:left; font-size:0.68rem; text-transform:uppercase; letter-spacing:0.4px;
+    color:var(--text-muted); padding:8px 10px; border-bottom:1px solid var(--border); white-space:nowrap;
+}
+.pd-table td { padding:10px; border-bottom:1px solid var(--border); vertical-align:top; }
+.pd-table tr:last-child td { border-bottom:none; }
+.pd-name { font-weight:700; }
+.pd-muted { color:var(--text-muted); }
+.pd-empty { text-align:center; padding:28px 16px; }
+.pd-empty h2 { font-size:0.95rem; font-weight:800; margin-bottom:6px; }
+.pd-empty p { font-size:0.78rem; color:var(--text-muted); }
+
+/* ===== Tren Kreatif ===== */
+.tr-card {
+    border:1px solid var(--border); border-radius:12px; padding:14px 16px; margin-bottom:12px;
+    background:var(--bg-card); transition:border-color .15s;
+}
+.tr-card:hover { border-color:var(--accent); }
+.tr-top { display:flex; gap:12px; align-items:flex-start; }
+.tr-rank {
+    flex:0 0 26px; height:26px; border-radius:8px; display:flex; align-items:center; justify-content:center;
+    background:linear-gradient(135deg,#6c5ce7,#fd79a8); color:#fff; font-weight:800; font-size:0.75rem;
+}
+.tr-title-wrap { flex:1; min-width:0; }
+.tr-title { font-weight:700; font-size:0.85rem; line-height:1.4; }
+.tr-meta { font-size:0.68rem; color:var(--text-muted); margin-top:4px; display:flex; gap:10px; flex-wrap:wrap; }
+.tr-meta a { color:var(--accent); text-decoration:none; }
+.tr-meta a:hover { text-decoration:underline; }
+.tr-angle { margin-top:10px; font-size:0.78rem; background:rgba(108,92,231,0.08); border-left:3px solid var(--accent); padding:8px 10px; border-radius:0 8px 8px 0; }
+.tr-hook { margin-top:8px; font-size:0.75rem; color:var(--text); }
+.tr-kws { margin-top:8px; display:flex; gap:6px; flex-wrap:wrap; }
+.tr-kw { font-size:0.65rem; background:rgba(108,92,231,0.12); color:var(--accent-light); border-radius:6px; padding:2px 8px; font-weight:600; }
+.tr-actions { margin-top:10px; display:flex; gap:8px; }
+@media (max-width:480px) {
+    .tr-top { flex-direction:column; gap:8px; }
+}
+</style>
+</head>
+<body>
+
+<!-- TOPBAR -->
+<header class="topbar">
+    <div class="topbar-inner">
+        <div class="topbar-left">
+            <button class="sidebar-toggle" id="sidebarToggle" onclick="toggleSidebar()">☰</button>
+            <img src="/static/kowalski-logo.png" alt="KS" style="height:26px;width:auto;object-fit:contain;border-radius:6px"> <span class="logo">Kowalski Ads Center</span>
+            <span class="badge" style="margin-left:8px;font-size:0.6rem;padding:2px 8px;background:linear-gradient(135deg,#6c5ce7,#fd79a8);color:#fff;border-radius:4px">Alpha Testing</span>
+        </div>
+        <div class="topbar-right">
+            <button class="theme-toggle" onclick="toggleTheme()" title="Ganti tema"><i class="bi bi-circle-half" aria-hidden="true"></i></button>
+            <span class="topbar-date" id="currentDate"></span>
+        </div>
+    </div>
+</header>
+
+<div id="sidebarBackdrop" class="sidebar-backdrop" onclick="toggleSidebar()"></div>
+
+<!-- SIDEBAR -->
+<aside class="sidebar collapsed" id="sidebar">
+    <div class="sidebar-brand">
+        <img src="/static/kowalski-logo.png" alt="KS" class="brand-logo-img" style="width:30px;height:30px;object-fit:contain;border-radius:8px">
+        <div>
+            <div class="brand-name">Kowalski Ads Center</div>
+            <div class="brand-sub">Meta Ads Report</div>
+        </div>
+    </div>
+    <nav class="sidebar-nav">
+                <a class="nav-item {{ 'active' if group=='generos' or group=='genmilk' else '' }}" href="#" onclick="toggleSubmenu(event, 'dashSubs')">
+            <span><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg></span> <span>Dashboard</span>
+            <span class="nav-arrow {{ 'open' if group=='generos' or group=='genmilk' else '' }}"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg></span>
+        </a>
+        <div class="nav-subs {{ 'open' if group=='generos' or group=='genmilk' else '' }}" id="dashSubs">
+            <a href="/dashboard" class="nav-sub {{ 'active' if group=='generos' else '' }}"><span><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg></span> <span>Generos</span></a>
+            <a href="/dashboard/genmilk" class="nav-sub {{ 'active' if group=='genmilk' else '' }}"><span><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2.69l5.66 5.66a8 8 0 1 1-11.31 0z"/></svg></span> <span>GenMilk</span></a>
+        </div>
+
+        <div class="nav-section">Analisis</div>
+        <a class="nav-item" href="#" onclick="toggleSubmenu(event, 'analisisSubs')">
+            <span><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg></span> <span>Analisis</span>
+            <span class="nav-arrow "><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg></span>
+        </a>
+        <div class="nav-subs " id="analisisSubs">
+            <a href="/analisis/kampanye" class="nav-sub "><span><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg></span> <span>Kampanye</span></a>
+            <a href="/analisis/adset" class="nav-sub "><span><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg></span> <span>Adset</span></a>
+            <a href="/analisis/iklan" class="nav-sub "><span><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z"/></svg></span> <span>Iklan</span></a>
+        </div>
+
+        <div class="nav-section admin-only">Creator</div>
+        <a class="nav-item admin-only" href="#" onclick="toggleSubmenu(event, 'creatorSubs')">
+            <span><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="3" width="20" height="18" rx="3" ry="3"/><polygon points="10 8 16 12 10 16 10 8"/></svg></span> <span>Creator</span>
+            <span class="nav-arrow "><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg></span>
+        </a>
+        <div class="nav-subs " id="creatorSubs">
+            <a href="/vo-generator" class="nav-sub admin-only "><span><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" y1="19" x2="12" y2="22"/></svg></span> <span>Generator VO</span></a>
+            <a href="/storyboard" class="nav-sub admin-only "><span><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z"/></svg></span> <span>Storyboard</span></a>
+            <a href="/copywriting-generator" class="nav-sub admin-only "><span><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg></span> <span>Copywriting</span></a>
+            <a href="/adset-generator" class="nav-sub admin-only "><span><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg></span> <span>Adset</span></a>
+        </div>
+
+        <div class="nav-section admin-only">Tools</div>
+        <a class="nav-item admin-only" href="#" onclick="toggleSubmenu(event, 'toolsSubs')">
+            <span><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg></span> <span>Tools</span>
+            <span class="nav-arrow open"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg></span>
+        </a>
+        <div class="nav-subs open" id="toolsSubs">
+            <a href="/dev/campaign-studio" class="nav-sub admin-only "><span><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4.5 16.5c-1.5 1.26-2 5-2 5s3.74-.5 5-2c.71-.84.7-2.13-.06-2.91a2.2 2.2 0 0 0-2.94-.09z"/><path d="M12 15l-3-3a22 22 0 0 1 2-3.95A12.88 12.88 0 0 1 22 2c0 2.72-.78 7.5-6 11a22.35 22.35 0 0 1-4 2z"/><path d="M9 12H4s.55-3.03 2-4c1.62-1.08 5 0 5 0"/><path d="M12 15v5s3.03-.55 4-2c1.08-1.62 0-5 0-5"/></svg></span> <span>Campaign Studio <span class="badge" style="margin-left:4px;font-size:0.55rem;padding:1px 6px;background:linear-gradient(135deg,#6c5ce7,#fd79a8);color:#fff;border-radius:4px">Final Testing</span></span></a>
+            <a href="/produk" class="nav-sub admin-only "><span><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.83z"/><line x1="7" y1="7" x2="7.01" y2="7"/></svg></span> <span>Data Produk</span></a>
+            <a href="/tren" class="nav-sub admin-only active"><span><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg></span> <span>Tren Kreatif <span class="badge" style="margin-left:4px;font-size:0.55rem;padding:1px 6px;background:linear-gradient(135deg,#6c5ce7,#fd79a8);color:#fff;border-radius:4px">Baru</span></span></a>
+            <a href="/custom-audiences" class="nav-sub admin-only "><span><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg></span> <span>Custom Audience </span></a>
+            <a href="/page-post" class="nav-sub admin-only active"><span><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg></span> <span>Post Fanpage </span></a>
+            <a href="/dailyleveling" class="nav-sub admin-only "><span><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg></span> <span>Daily Leveling</span></a>
+            <a href="/cron-management" class="nav-sub admin-only "><span><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg></span> <span>Cron Management</span></a>
+            <a href="/kuota-9router" class="nav-sub admin-only "><span><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20V10"/><path d="M18 20V4"/><path d="M6 20v-4"/></svg></span> <span>Kuota 9Router</span></a>
+
+        </div>
+
+        <div class="nav-section">Report</div>
+        <a class="nav-item" href="#" onclick="toggleSubmenu(event, 'reportSubs')">
+            <span><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg></span> <span>Report</span>
+            <span class="nav-arrow "><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg></span>
+        </a>
+        <div class="nav-subs " id="reportSubs">
+            <a href="/roas" class="nav-sub "><span><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg></span> <span>ROAS Report</span></a>
+            <a href="/bank-konten" class="nav-sub admin-only "><span><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg></span> <span>Bank Konten</span></a>
+            <a href="/bank-konten/genmilk" class="nav-sub admin-only "><span><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2.69l5.66 5.66a8 8 0 1 1-11.31 0z"/></svg></span> <span>Bank Konten GenMilk</span></a>
+            <a href="/bank-kreatif" class="nav-sub admin-only "><span><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg></span> <span>Bank Kreatif</span></a>
+        </div>
+    </nav>
+    <div class="sidebar-user">
+        <div class="user-avatar">GA</div>
+        <div style="flex:1;min-width:0">
+            <div class="user-name">Gilang Aji</div>
+            <div class="user-role">Administrator</div>
+        </div>
+        <button class="btn-logout" onclick="logout()" title="Logout"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg></button>
+    </div>
+</aside>
+
+<main class="main expanded" id="mainContent">
+    <div class="pp-wrap">
+        <div class="pp-header">
+            <div>
+                <h1>📈 Tren Kreatif</h1>
+                <div class="pp-desc">Topik parenting &amp; kesehatan anak <b>30 hari terakhir</b> dari Google News (RSS). Klik <b>Pakai Angle</b> → angle siap dipakai di generator <b>Copywriting</b> atau <b>Storyboard</b>.</div>
+            </div>
+            <div class="pd-updated" id="trenUpdated" style="font-size:0.8rem;color:var(--text-muted);padding-top:6px"></div>
+        </div>
+
+        <div class="pd-grid" style="grid-template-columns:1fr">
+            <div class="pd-card">
+                <div class="pd-card-head" style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px">
+                    <h3 style="margin:0">🔥 Topik Panas <span class="pd-count" id="trenCount"></span></h3>
+                    <button class="pd-btn" onclick="loadTren()" style="font-size:0.75rem;padding:4px 10px">🔄 Refresh</button>
+                </div>
+                <div id="trenLoading" style="color:var(--text-muted);padding:20px 0;text-align:center;font-size:0.85rem">Memuat tren...</div>
+                <div id="trenEmpty" style="display:none;color:var(--text-muted);padding:20px 0;text-align:center;font-size:0.9rem">
+                    <h2>Belum ada data tren</h2>
+                    <p style="font-size:0.8rem">Jalankan <code>tren_riset.py</code> dulu atau tunggu cron mingguan.</p>
+                </div>
+                <div id="trenList"></div>
+            </div>
+        </div>
+    </div>
+</main>
+
+<div class="toast" id="toast"></div>
+
+<script>
+let TREN = { generated_at: null, window_days: 30, count: 0, topics: [] };
+
+// Format tanggal Indonesia (dipakai #currentDate di header) — disalin dari shell KAC.
+const DAY_ID = ['Minggu','Senin','Selasa','Rabu','Kamis','Jumat','Sabtu'];
+const MONTH_ID = ['Jan','Feb','Mar','Apr','Mei','Jun','Jul','Agu','Sep','Okt','Nov','Des'];
+function fmtDateTimeId(iso) {
+    if (!iso) return '';
+    const d = new Date(iso);
+    if (isNaN(d.getTime())) return iso.replace('T',' ').slice(0,16);
+    const hh = String(d.getHours()).padStart(2,'0');
+    const mm = String(d.getMinutes()).padStart(2,'0');
+    return `${DAY_ID[d.getDay()]}, ${d.getDate()} ${MONTH_ID[d.getMonth()]} ${d.getFullYear()} • ${hh}:${mm}`;
+}
+
+function esc(s) {
+    return String(s == null ? '' : s)
+        .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+}
+
+let trenToastTimer = null;
+function toast(msg, type) {
+    const el = document.getElementById('toast');
+    el.textContent = msg;
+    el.className = 'toast toast-' + (type || 'info');
+    clearTimeout(trenToastTimer);
+    trenToastTimer = setTimeout(() => { el.className = 'toast'; }, 4000);
+}
+
+const SRC_ICON = {
+    news: '📰',
+    reddit: '💬',
+};
+
+function renderTren() {
+    const list = document.getElementById('trenList');
+    document.getElementById('trenCount').textContent = TREN.count ? '(' + TREN.count + ')' : '';
+
+    if (!TREN.topics || !TREN.topics.length) {
+        document.getElementById('trenEmpty').style.display = 'block';
+        list.innerHTML = '';
+        return;
+    }
+    document.getElementById('trenEmpty').style.display = 'none';
+    const up = document.getElementById('trenUpdated');
+    up.textContent = TREN.generated_at ? 'Terakhir update: ' + fmtDateTimeId(TREN.generated_at) : '';
+
+    list.innerHTML = TREN.topics.map(function (t, i) {
+        const angle = t.angle || '';
+        const hook = t.hook || '';
+        const kw = (t.keywords || []).slice(0, 3);
+        const kwHtml = kw.length ? kw.map(function (k) { return '<span class="tr-kw">#' + esc(k).replace(/\s+/g, '') + '</span>'; }).join('') : '';
+        return '<div class="tr-card">' +
+            '<div class="tr-top">' +
+                '<span class="tr-rank">' + (i + 1) + '</span>' +
+                '<div class="tr-title-wrap">' +
+                    '<div class="tr-title">' + (SRC_ICON[t.platform] || '•') + ' ' + esc(t.title) + '</div>' +
+                    '<div class="tr-meta">' +
+                        (t.source ? '<span>' + esc(t.source) + '</span>' : '') +
+                        (t.age_days != null ? '<span>' + t.age_days + 'd lalu</span>' : '') +
+                        (t.link ? '<a href="' + esc(t.link) + '" target="_blank" rel="noopener">🔗 sumber</a>' : '') +
+                    '</div>' +
+                '</div>' +
+            '</div>' +
+            (angle ? '<div class="tr-angle"><b>Angle:</b> ' + esc(angle) + '</div>' : '') +
+            (hook ? '<div class="tr-hook"><b>Hook:</b> ' + esc(hook) + '</div>' : '') +
+            (kwHtml ? '<div class="tr-kws">' + kwHtml + '</div>' : '') +
+            '<div class="tr-actions">' +
+                '<button class="pd-btn pd-btn-sm" onclick="useAngle(' + i + ')">✍️ Pakai Angle</button>' +
+            '</div>' +
+        '</div>';
+    }).join('');
+}
+
+function useAngle(i) {
+    const t = TREN.topics[i];
+    if (!t) return;
+    const angle = t.angle || t.title;
+    // Simpan ke localStorage — dibaca halaman copywriting & storyboard generator
+    localStorage.setItem('tren_angle', angle);
+    localStorage.setItem('tren_hook', t.hook || '');
+    const kw = (t.keywords || []).slice(0, 3);
+    localStorage.setItem('tren_keywords', JSON.stringify(kw));
+    const target = confirm('Angle "' + (t.title.length > 40 ? t.title.slice(0, 40) + '…' : t.title) + '" dipakai di mana?\n\nOK = Copywriting Generator\nCancel = Storyboard Generator');
+    toast('Angle siap — buka generator yang dipilih', 'success');
+    window.location.href = target ? '/copywriting-generator' : '/storyboard';
+}
+
+async function loadTren() {
+    document.getElementById('trenLoading').style.display = 'block';
+    try {
+        const r = await fetch('/api/tren?_t=' + Date.now());
+        if (!r.ok) throw new Error('HTTP ' + r.status);
+        const d = await r.json().catch(() => ({}));
+        if (d && Array.isArray(d.topics)) {
+            TREN = d;
+            renderTren();
+        } else {
+            renderTren();
+        }
+    } catch (e) {
+        document.getElementById('trenEmpty').style.display = 'block';
+        document.getElementById('trenEmpty').querySelector('p').textContent = 'Gagal ambil data: ' + e.message;
+    } finally {
+        document.getElementById('trenLoading').style.display = 'none';
+    }
+}
+
+// ===== SIDEBAR / THEME =====
+function toggleTheme() {
+    const html = document.documentElement;
+    const cur = html.getAttribute('data-theme');
+    const next = cur === 'dark' ? 'light' : 'dark';
+    html.setAttribute('data-theme', next);
+    localStorage.setItem('rg-theme', next);
+}
+function toggleSidebar() {
+    const sidebar = document.getElementById('sidebar');
+    const main = document.getElementById('mainContent');
+    const backdrop = document.getElementById('sidebarBackdrop');
+    if (window.innerWidth <= 768) {
+        sidebar.classList.toggle('open');
+        if (backdrop) backdrop.classList.toggle('show');
+    } else {
+        sidebar.classList.toggle('collapsed');
+        main.classList.toggle('expanded');
+    }
+    localStorage.setItem('rg-sidebar', sidebar.classList.contains('collapsed') ? '1' : '0');
+}
+if (typeof window.toggleSubmenu !== 'function') {
+    window.toggleSubmenu = function(e, id) {
+        e.preventDefault();
+        const el = document.getElementById(id);
+        if (!el) return;
+        const open = el.classList.contains('open');
+        el.classList.toggle('open', !open);
+        const arrow = e.currentTarget.querySelector('.nav-arrow');
+        if (arrow) arrow.classList.toggle('open', !open);
+    };
+}
+function logout() { window.location.href = '/logout'; }
+
+(function init() {
+    if (localStorage.getItem('rg-sidebar') === '1') {
+        document.getElementById('sidebar').classList.add('collapsed');
+        document.getElementById('mainContent').classList.add('expanded');
+    }
+    const cd = document.getElementById('currentDate');
+    if (cd) cd.textContent = fmtDateTimeId(new Date().toISOString());
+    loadTren();
+})();
+</script>
+</body>
+</html>

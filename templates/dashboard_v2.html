@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<link rel="icon" type="image/png" href="/static/favicon.png">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Kowalski Ads Center — Ringkasan</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --text:#111827; --text-2:#374151; --muted:#6B7280; --faint:#9CA3AF;
+    --line:#E5E7EB; --line-soft:#F1F3F5; --soft:#F9FAFB;
+    --accent:#2563EB; --accent-soft:#EFF6FF;
+    --good:#15803D; --good-soft:#F0FDF4; --bad:#B91C1C; --bad-soft:#FEF2F2;
+    --radius:12px;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;padding:0}
+  body{
+    font-family:'Inter',system-ui,-apple-system,'Segoe UI',Roboto,sans-serif;
+    background:#fff; color:var(--text);
+    font-size:14px; line-height:1.45;
+    -webkit-font-smoothing:antialiased;
+    font-variant-numeric:tabular-nums;
+  }
+  /* ---------- topbar ---------- */
+  .topbar{border-bottom:1px solid var(--line); background:#fff}
+  .topbar-in{max-width:1180px;margin:0 auto;padding:0 28px;height:58px;display:flex;align-items:center;gap:28px}
+  .brand{display:flex;align-items:center;gap:9px;font-weight:600;letter-spacing:-.01em}
+  .mark{width:22px;height:22px;border-radius:6px;background:var(--accent);color:#fff;
+        display:grid;place-items:center;font-size:12px;font-weight:600}
+  .nav{display:flex;gap:22px;margin-left:6px}
+  .nav a{color:var(--muted);text-decoration:none;font-size:13.5px}
+  .nav a.on{color:var(--text);font-weight:500}
+  .topbar-right{margin-left:auto;display:flex;align-items:center;gap:10px}
+  .pill{display:inline-flex;align-items:center;gap:7px;border:1px solid var(--line);border-radius:8px;
+        padding:6px 11px;font-size:13px;color:var(--text-2);background:#fff;white-space:nowrap}
+  .pill .chev{color:var(--faint);font-size:10px}
+  .dot-live{width:7px;height:7px;border-radius:50%;background:var(--good)}
+  /* ---------- layout ---------- */
+  .wrap{max-width:1180px;margin:0 auto;padding:26px 28px 56px}
+  .head{display:flex;align-items:flex-end;gap:14px;flex-wrap:wrap;margin-bottom:20px}
+  h1{font-size:19px;font-weight:600;margin:0;letter-spacing:-.01em}
+  .head .sub{color:var(--muted);font-size:13px;margin-bottom:1px}
+  /* ---------- stat cards ---------- */
+  .cards{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:16px}
+  .stat{border:1px solid var(--line);border-radius:var(--radius);padding:16px 18px 17px}
+  .stat .lab{font-size:11px;font-weight:500;letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
+  .stat .val{font-size:26px;font-weight:500;letter-spacing:-.02em;margin:9px 0 7px}
+  .stat .val small{font-size:15px;color:var(--muted);font-weight:400;margin-left:3px}
+  .delta{display:inline-flex;align-items:center;gap:5px;font-size:12.5px;font-weight:500}
+  .delta.up{color:var(--good)} .delta.down{color:var(--bad)} .delta.flat{color:var(--muted)}
+  .delta .vs{color:var(--faint);font-weight:400}
+  /* ---------- chart ---------- */
+  .card{border:1px solid var(--line);border-radius:var(--radius);padding:18px}
+  .card-hd{display:flex;align-items:center;gap:10px;margin-bottom:6px}
+  .card-hd h2{font-size:14px;font-weight:600;margin:0}
+  .seg{margin-left:auto;display:inline-flex;border:1px solid var(--line);border-radius:8px;overflow:hidden}
+  .seg button{appearance:none;border:0;background:#fff;color:var(--muted);font:inherit;font-size:12.5px;
+              padding:6px 12px;cursor:pointer;border-right:1px solid var(--line)}
+  .seg button:last-child{border-right:0}
+  .seg button.on{background:var(--accent-soft);color:var(--accent);font-weight:500}
+  .chart-meta{color:var(--muted);font-size:12.5px;margin-bottom:14px}
+  .chart-meta b{color:var(--text);font-weight:600}
+  svg{display:block;width:100%;height:250px;overflow:visible}
+  .gridline{stroke:var(--line-soft);stroke-width:1}
+  .xlab{fill:var(--faint);font-size:11px}
+  .ylab{fill:var(--faint);font-size:11px}
+  /* ---------- panel list ---------- */
+  .grid2{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:14px}
+  .row{display:flex;align-items:center;gap:10px;padding:9px 0;border-bottom:1px solid var(--line-soft)}
+  .row:last-child{border-bottom:0;padding-bottom:0}
+  .row .nm{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:13.5px}
+  .row .nm .tag{color:var(--faint);font-size:12px;margin-left:6px}
+  .row .num{font-weight:500;font-size:13.5px}
+  .row .sub{color:var(--muted);font-size:12.5px;min-width:74px;text-align:right}
+  .sdot{width:7px;height:7px;border-radius:50%;background:var(--faint);flex:0 0 7px}
+  .bar{height:4px;border-radius:2px;background:var(--soft);overflow:hidden;width:78px;flex:0 0 78px}
+  .bar i{display:block;height:100%;background:var(--accent);border-radius:2px}
+  /* ---------- table ---------- */
+  table{width:100%;border-collapse:collapse;margin-top:4px}
+  th{font-size:11px;font-weight:500;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);
+     text-align:right;padding:0 0 10px;border-bottom:1px solid var(--line);white-space:nowrap}
+  th:first-child,td:first-child{text-align:left}
+  th.l,td.l{text-align:left}
+  td{padding:11px 0;border-bottom:1px solid var(--line-soft);font-size:13.5px;text-align:right}
+  tbody tr:last-child td{border-bottom:0}
+  .cmp{max-width:46ch;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .ok{color:var(--good)} .no{color:var(--bad)}
+  .tagacc{display:inline-block;min-width:26px;font-size:12px;color:var(--muted);font-weight:500}
+  .foot{margin-top:18px;color:var(--faint);font-size:12px;display:flex;gap:8px;align-items:center}
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <div class="topbar-in">
+    <div class="brand"><span class="mark">K</span> Kowalski Ads Center</div>
+    <nav class="nav">
+      <a href="#" class="on">Ringkasan</a>
+      <a href="#">Analisis</a>
+      <a href="#">Bank Konten</a>
+      <a href="#">Daily Leveling</a>
+    </nav>
+    <div class="topbar-right">
+      <span class="pill"><span class="dot-live"></span> Live · sync 22 Sep 2026 11:11</span>
+      <span class="pill">Generos <span class="chev">▾</span></span>
+      <span class="pill">9 Sep – 15 Sep <span class="chev">▾</span></span>
+    </div>
+  </div>
+</div>
+
+<div class="wrap">
+  <div class="head">
+    <h1>Ringkasan</h1>
+    <span class="sub">9 Sep – 15 Sep · dibandingkan 2 Sep – 8 Sep</span>
+  </div>
+
+  <div class="cards" id="cards"></div>
+
+  <div class="card">
+    <div class="card-hd">
+      <h2 id="chart-title">Spend</h2>
+      <div class="seg" id="seg">
+        <button data-m="spend" class="on">Spend</button>
+        <button data-m="results">Hasil</button>
+        <button data-m="cpr">CPR</button>
+      </div>
+    </div>
+    <div class="chart-meta" id="chart-meta"></div>
+    <svg id="chart" viewBox="0 0 1100 250" preserveAspectRatio="none"></svg>
+  </div>
+
+  <div class="grid2">
+    <div class="card">
+      <div class="card-hd"><h2>Per Akun</h2></div>
+      <div id="by-account"></div>
+    </div>
+    <div class="card">
+      <div class="card-hd"><h2>Kampanye Teratas</h2></div>
+      <div id="top-camp"></div>
+    </div>
+  </div>
+
+  <div class="card" style="margin-top:14px">
+    <div class="card-hd"><h2>Kampanye</h2><span class="chart-meta" style="margin:0 0 0 auto">diurutkan dari spend terbesar</span></div>
+    <table>
+      <thead>
+        <tr>
+          <th class="l">Akun</th><th class="l">Kampanye</th>
+          <th>Spend</th><th>Hasil</th><th>CPR</th><th>CPC</th><th>CTR</th>
+        </tr>
+      </thead>
+      <tbody id="tbody"></tbody>
+    </table>
+  </div>
+
+  <div class="foot">
+    <span>Sumber: database KAC (Meta Marketing API)</span>·<span>Target CPR total Rp150.000</span>·<span>Mockup desain — bukan halaman produksi</span>
+  </div>
+</div>
+
+<script>
+const D = {"period":{"from":"2026-09-09","to":"2026-09-15","prev_from":"2026-09-02","prev_to":"2026-09-08"},"accounts":{"G1":{"spend":44973008.0,"results":404,"cpr":111319.32673267326},"G2":{"spend":27751257.0,"results":237,"cpr":117093.91139240506},"G3":{"spend":12719651.0,"results":106,"cpr":119996.7075471698},"G4":{"spend":7407702.0,"results":56,"cpr":132280.39285714287}},"prev_accounts":{"G1":{"spend":46873992.0,"results":419,"cpr":111871.10262529833},"G2":{"spend":29397385.0,"results":256,"cpr":114833.53515625},"G3":{"spend":8758444.0,"results":83,"cpr":105523.421686747},"G4":{"spend":9524711.0,"results":76,"cpr":125325.1447368421}},"daily":{"2026-09-09":{"spend":12686149.0,"results":127},"2026-09-10":{"spend":12276227.0,"results":97},"2026-09-11":{"spend":14348028.0,"results":126},"2026-09-12":{"spend":9642400.0,"results":93},"2026-09-13":{"spend":12458419.0,"results":106},"2026-09-14":{"spend":14473927.0,"results":121},"2026-09-15":{"spend":16966468.0,"results":133}},"prev_daily":{"2026-09-02":{"spend":16160218.0,"results":149},"2026-09-03":{"spend":14477879.0,"results":129},"2026-09-04":{"spend":15242691.0,"results":128},"2026-09-05":{"spend":12546795.0,"results":98},"2026-09-06":{"spend":12349513.0,"results":99},"2026-09-07":{"spend":12556284.0,"results":126},"2026-09-08":{"spend":11221152.0,"results":105}},"campaigns":[{"name":"DL - 20.1.2026 - CBO - 2 (lead 6) (lv5)","acc":"G1","spend":7309860.0,"results":60,"impressions":734383,"clicks":7490.972608000001,"status":"PAUSED","last":"2026-09-15","cpr":121831.0,"ctr":1.0200362219713692,"cpc":975.822551025406},{"name":"DL - CBO - 13 07 2026 - Up Win (lead 3) (lv1)","acc":"G1","spend":5524899.0,"results":41,"impressions":436941,"clicks":3515.022037,"status":"PAUSED","last":"2026-09-15","cpr":134753.63414634147,"ctr":0.8044614803829351,"cpc":1571.796404643707},{"name":"DL - F3 - 08 06 26 - C2 (lead 5) (lv4)","acc":"G1","spend":4437370.0,"results":48,"impressions":704991,"clicks":8895.068981,"status":"PAUSED","last":"2026-09-15","cpr":92445.20833333333,"ctr":1.2617280193647864,"cpc":498.85728930020537},{"name":"26.1.2026 - CBO - 1","acc":"G1","spend":4340355.0,"results":51,"impressions":299031,"clicks":2700.022832,"status":"PAUSED","last":"2026-09-15","cpr":85105.0,"ctr":0.9029240553654974,"cpc":1607.525295178689},{"name":"CBO - 10 09 26 - Dup 26.1.26","acc":"G1","spend":4055870.0,"results":51,"impressions":314187,"clicks":3016.033438,"status":"PAUSED","last":"2026-09-15","cpr":79526.86274509804,"ctr":0.9599485141014746,"cpc":1344.769573473144},{"name":"ABO - 11 07 2026 - Up Sales 1","acc":"G4","spend":3493452.0,"results":31,"impressions":248095,"clicks":2654.989657,"status":"PAUSED","last":"2026-09-15","cpr":112692.0,"ctr":1.0701504089159395,"cpc":1315.8062558885517},{"name":"ABO - 09 07 2026 - Up 2 Tahun","acc":"G2","spend":3441841.0,"results":22,"impressions":243809,"clicks":3581.04696,"status":"PAUSED","last":"2026-09-15","cpr":156447.31818181818,"ctr":1.4687919477952003,"cpc":961.1270219142839},{"name":"ABO - 16 02 2026 - Testing Konten 2","acc":"G2","spend":3165689.0,"results":40,"impressions":18626,"clicks":1406.000633,"status":"PAUSED","last":"2026-09-15","cpr":79142.225,"ctr":7.548591393750671,"cpc":2251.5558853237017},{"name":"ABO - 10 08 2026 - Scale Up 2 Adset","acc":"G1","spend":3144356.0,"results":29,"impressions":182625,"clicks":3473.9899860000005,"status":"PAUSED","last":"2026-09-15","cpr":108426.06896551725,"ctr":1.9022532435318276,"cpc":905.1137201522145},{"name":"CBO - 09/09/26 - Sales 1 - Scale up","acc":"G3","spend":2979952.0,"results":30,"impressions":288596,"clicks":2434.991042,"status":"PAUSED","last":"2026-09-15","cpr":99331.73333333334,"ctr":0.843736933983839,"cpc":1223.8040915141896}],"totals":{"spend":92851618.0,"results":803,"prev_spend":94554532.0,"prev_results":834,"cpr":115630.90660024907,"prev_cpr":113374.73860911271,"active_campaigns":0,"campaigns_with_spend":52,"total_campaigns":962},"thresholds":{"per_acc":{"G1":130000,"G2":130000,"G3":150000,"G4":150000},"total":150000},"acc_label":{"G1":"G1 \u00b7 Generos LEAD","G2":"G2 \u00b7 Generos LEAD","G3":"G3 \u00b7 Generos ATC","G4":"G4 \u00b7 Generos ATC"},"synced_at":"22 Sep 2026 11:11"};
+
+const rp = (n, dec=0) => 'Rp' + (n||0).toLocaleString('id-ID', {minimumFractionDigits:dec, maximumFractionDigits:dec});
+const short = n => n >= 1e9 ? (n/1e9).toFixed(1).replace('.',',')+' M'
+              : n >= 1e6 ? (n/1e6).toFixed(1).replace('.',',')+' jt'
+              : n >= 1e3 ? (n/1e3).toFixed(0)+' rb' : String(Math.round(n));
+const pct = (a,b) => (!b || !a) ? null : ((a-b)/b*100);
+const signCls = (v, inverse=false) => v===null ? 'flat' : (v>0.5 ? (inverse?'down':'up') : (v<-0.5 ? (inverse?'up':'down') : 'flat'));
+const arrow = v => (v===null || Math.abs(v)<=0.5) ? '' : (v>0 ? '↑' : '↓');
+
+// ---------- stat cards ----------
+const T = D.totals;
+const dSpend = pct(T.spend, T.prev_spend), dRes = pct(T.results, T.prev_results), dCpr = pct(T.cpr, T.prev_cpr);
+const cards = [
+  {lab:'Total Spend', html:rp(T.spend), d:dSpend, vs:'vs periode lalu'},
+  {lab:'Hasil', html:String(T.results), d:dRes, vs:'vs periode lalu'},
+  {lab:'CPR Rata-rata', html:rp(Math.round(T.cpr)), d:dCpr, inv:true, vs:'vs periode lalu'},
+  {lab:'Kampanye Jalan', html:String(T.campaigns_with_spend), d:null, vs:'ada spend di periode ini'},
+];
+document.getElementById('cards').innerHTML = cards.map(c => `
+  <div class="stat">
+    <div class="lab">${c.lab}</div>
+    <div class="val">${c.html}</div>
+    <span class="delta ${signCls(c.d, c.inv)}">
+      ${c.d===null ? '' : arrow(c.d)+' '+Math.abs(c.d).toFixed(1).replace('.',',')+'%'}
+      <span class="vs">${c.vs}</span>
+    </span>
+  </div>`).join('');
+
+// ---------- chart ----------
+const days = Object.keys(D.daily).sort();
+const series = {
+  spend:   {label:'Spend',   get:d => D.daily[d].spend,   fmt:v => rp(Math.round(v)), total:days.reduce((a,d)=>a+D.daily[d].spend,0), totalFmt:v=>rp(Math.round(v))},
+  results: {label:'Hasil',   get:d => D.daily[d].results, fmt:v => Math.round(v)+' hasil', total:days.reduce((a,d)=>a+D.daily[d].results,0), totalFmt:v=>String(Math.round(v))+' hasil'},
+  cpr:     {label:'CPR',     get:d => D.daily[d].results ? D.daily[d].spend/D.daily[d].results : 0, fmt:v => rp(Math.round(v)), total:null},
+};
+const fmtDay = s => { const [y,m,dd] = s.split('-'); const mo=['Jan','Feb','Mar','Apr','Mei','Jun','Jul','Agu','Sep','Okt','Nov','Des'][+m-1]; return dd+' '+mo; };
+let metric = 'spend';
+
+function drawChart(){
+  const s = series[metric];
+  const vals = days.map(s.get);
+  const max = Math.max(...vals) * 1.18 || 1;
+  const W = 1100, H = 250, padB = 34, padL = 4, padR = 66;
+  const x = i => padL + i * ((W - padL - padR) / (vals.length - 1));
+  const y = v => (H - padB) - (v / max) * (H - padB - 12);
+  let g = '';
+  for (let i = 0; i <= 4; i++){
+    const yy = 12 + i * ((H - padB - 12) / 4);
+    g += `<line class="gridline" x1="0" y1="${yy.toFixed(1)}" x2="${W - padR}" y2="${yy.toFixed(1)}"/>`;
+    const lab = i === 4 ? '' : short(max * (1 - i / 4));
+    if (lab) g += `<text class="ylab" x="${W}" y="${(yy - 4).toFixed(1)}" text-anchor="end">${lab}</text>`;
+  }
+  const pts = vals.map((v,i) => [x(i), y(v)]);
+  const line = pts.map((p,i) => (i? 'L':'M') + p[0].toFixed(1) + ' ' + p[1].toFixed(1)).join(' ');
+  const area = line + ` L ${pts[pts.length-1][0].toFixed(1)} ${H-padB} L ${pts[0][0].toFixed(1)} ${H-padB} Z`;
+  const dots = pts.map((p,i) => `<circle cx="${p[0].toFixed(1)}" cy="${p[1].toFixed(1)}" r="3.2" fill="#fff" stroke="#2563EB" stroke-width="2"><title>${fmtDay(days[i])}: ${s.fmt(vals[i])}</title></circle>`).join('');
+  const labs = days.map((d,i) => `<text class="xlab" x="${x(i).toFixed(1)}" y="${H-8}" text-anchor="middle">${fmtDay(d)}</text>`).join('');
+  document.getElementById('chart').innerHTML = `
+    <defs>
+      <linearGradient id="fill" x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0%" stop-color="#2563EB" stop-opacity=".18"/>
+        <stop offset="100%" stop-color="#2563EB" stop-opacity="0"/>
+      </linearGradient>
+    </defs>
+    ${g}
+    <path d="${area}" fill="url(#fill)"/>
+    <path d="${line}" fill="none" stroke="#2563EB" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"/>
+    ${dots}${labs}`;
+  document.getElementById('chart-title').textContent = s.label + ' / hari';
+  const sum = s.total, sumTxt = sum===null ? '' : ' · total ' + s.totalFmt(sum);
+  document.getElementById('chart-meta').innerHTML = `<b>${fmtDay(days[0])} – ${fmtDay(days[days.length-1])}</b>${sumTxt}`;
+}
+
+document.getElementById('seg').addEventListener('click', e => {
+  const b = e.target.closest('button'); if (!b) return;
+  metric = b.dataset.m;
+  [...document.querySelectorAll('#seg button')].forEach(x => x.classList.toggle('on', x === b));
+  drawChart();
+});
+
+// ---------- per akun ----------
+const accs = Object.keys(D.accounts).sort();
+const totSpend = accs.reduce((a,k) => a + D.accounts[k].spend, 0);
+document.getElementById('by-account').innerHTML = accs.map(k => {
+  const a = D.accounts[k], p = D.prev_accounts[k] || {cpr:0};
+  const share = totSpend ? a.spend / totSpend * 100 : 0;
+  const thr = D.thresholds.per_acc[k];
+  const dcpr = pct(a.cpr, p.cpr);
+  return `<div class="row">
+    <span class="sdot"></span>
+    <span class="nm">${D.acc_label[k] || k}<span class="tag">${share.toFixed(1).replace('.',',')}%</span></span>
+    <span class="bar"><i style="width:${share.toFixed(1)}%"></i></span>
+    <span class="num" style="min-width:96px;text-align:right">${rp(Math.round(a.spend))}</span>
+    <span class="sub ${a.cpr<=thr?'ok':'no'}">${rp(Math.round(a.cpr))}${dcpr===null?'':' '+arrow(dcpr)}</span>
+  </div>`;
+}).join('');
+
+// ---------- kampanye teratas ----------
+document.getElementById('top-camp').innerHTML = D.campaigns.slice(0,5).map(c => {
+  const thr = D.thresholds.per_acc[c.acc];
+  return `<div class="row">
+    <span class="tagacc">${c.acc}</span>
+    <span class="nm">${c.name}</span>
+    <span class="num" style="min-width:92px;text-align:right">${rp(Math.round(c.spend))}</span>
+    <span class="sub ${c.cpr<=thr?'ok':'no'}">${rp(Math.round(c.cpr))}</span>
+  </div>`;
+}).join('');
+
+// ---------- tabel ----------
+document.getElementById('tbody').innerHTML = D.campaigns.map(c => {
+  const thr = D.thresholds.per_acc[c.acc];
+  return `<tr>
+    <td class="l"><span class="tagacc">${c.acc}</span></td>
+    <td class="l"><div class="cmp" title="${c.name}">${c.name}</div></td>
+    <td>${rp(Math.round(c.spend))}</td>
+    <td>${c.results}</td>
+    <td class="${c.cpr<=thr?'ok':'no'}">${rp(Math.round(c.cpr))}</td>
+    <td>${rp(Math.round(c.cpc))}</td>
+    <td>${c.ctr.toFixed(2).replace('.',',')}%</td>
+  </tr>`;
+}).join('');
+
+drawChart();
+</script>
+</body>
+</html>
